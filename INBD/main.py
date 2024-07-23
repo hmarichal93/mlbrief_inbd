@@ -4,8 +4,6 @@ import warnings; warnings.simplefilter('ignore')  #pytorch is too noisy
 
 from src import util
 
-def test():
-    pass
 
 def train(args):
     '''Main training entry point'''
