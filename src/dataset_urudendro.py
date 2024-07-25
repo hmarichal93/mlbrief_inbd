@@ -99,7 +99,7 @@ class PinusTaeda:
 
             # pith_size = 3 if disk_name in disk_with_small_pith else 3
             # pith_size = self.__get_minimum_ring_area_index(annotation, img)
-            pith_size = 0
+            pith_size = 1
             segmentation_mask, boundaries_mask = self.annotation_to_mask(annotation, img, pith_size=pith_size,
                                                                          size=size)
             if size:
@@ -338,9 +338,9 @@ class PinusTaeda:
 
 
 
-def build_dataset(dataset_dir, output_dir='/data/maestria/resultados/inbd_2'):
+def build_dataset(dataset_dir, output_dir='/data/maestria/resultados/inbd_2', size=None):
     dataset = PinusTaeda(dataset_dir=dataset_dir, output_dir=output_dir)
-    dataset.transform_annotations()
+    dataset.transform_annotations(size=size)
     dataset.split_dataset_in_train_val_and_test()
     train_dataloader, val_dataloader, test_dataloader = dataset.create_dataloaders()
     train_pdf_path = Path(output_dir) / 'train.pdf'
@@ -358,7 +358,13 @@ def inspect_annotations(dataset_dir, output_dir='/data/maestria/resultados/inbd/
     return
 
 if __name__ == "__main__":
-    output_dir = '/data/maestria/resultados/inbd_pinus_taeda/cstrd/inbd'
-    dataset_dir = '/data/maestria/resultados/inbd_pinus_taeda/cstrd/PinusTaedaV1'
-    build_dataset(dataset_dir, output_dir)
-    inspect_annotations(dataset_dir=output_dir, output_dir=Path(output_dir) / 'inspect')
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--dataset_dir', type=str, help='Dataset directory')
+    parser.add_argument('--output_folder', type=str, help='Output folder')
+
+    parser.add_argument('--size', type=int, help='Output image size')
+    ##resize flag
+    args = parser.parse_args()
+    build_dataset(args.dataset_dir, args.output_folder, args.size)
+    inspect_annotations(dataset_dir=args.output_folder, output_dir=Path(args.output_folder) / 'inspect')
