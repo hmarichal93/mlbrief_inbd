@@ -13,13 +13,11 @@ class FromINBD2UruDendro:
         self.output_dir = output_dir
         Path(self.output_dir).mkdir(parents=True, exist_ok=True)
 
-
     def load_inbd_labelmap(self, inbd_labelmap_path):
         inbd_labelmap = np.load(inbd_labelmap_path)
         return inbd_labelmap
 
-    def convert_inbd_labelmap_to_urudendro(self, inbd_labelmap):
-        pass
+
 
     def transform_inbd_labelmap_to_contours(self, image_path, root_inbd_results, debug=True):
         image_name = Path(image_path).name
