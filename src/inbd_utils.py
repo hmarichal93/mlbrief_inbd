@@ -7,18 +7,21 @@ from fpdf import FPDF
 from lib.image import Color
 from lib.utils import polygon_2_labelme_json, write_json
 class FromINBD2UruDendro:
-    def __init__(self, output_dir=None):
+    def __init__(self, output_dir=None, debug = True):
+        self.debug = debug
+
         if output_dir is None:
             raise ValueError("output_dir must be defined")
         self.output_dir = output_dir
         Path(self.output_dir).mkdir(parents=True, exist_ok=True)
+
 
     def load_inbd_labelmap(self, inbd_labelmap_path):
         inbd_labelmap = np.load(inbd_labelmap_path)
         return inbd_labelmap
 
 
-    def transform_inbd_labelmap_to_contours(self, image_path, root_inbd_results, debug=True):
+    def transform_inbd_labelmap_to_contours(self, image_path, root_inbd_results):
         image_name = Path(image_path).name
         inbd_labelmap_path = f'{root_inbd_results}/{image_name}.labelmap.npy'
         if not Path(inbd_labelmap_path).exists():
@@ -31,7 +34,7 @@ class FromINBD2UruDendro:
         #remove background region (id=0)
         region_ids = region_ids[region_ids > 0]
         contours_list = []
-        if debug:
+        if self.debug:
             output_dir = Path(self.output_dir) / Path(image_path).stem
             output_dir.mkdir(parents=True, exist_ok=True)
             color = Color()
@@ -47,14 +50,14 @@ class FromINBD2UruDendro:
 
             contours_list.append(contours[0].squeeze())
             # draw contours on image
-            if debug:
+            if self.debug:
                 img_contour = image.copy()
                 img_contour[region_mask] = color.get_next_color()
                 cv2.drawContours(img_contour, contours, -1, color.get_next_color(), 3)
                 cv2.drawContours(image_debug, contours, -1, color.get_next_color(), 3)
                 #cv2.imwrite(f'{output_dir}/contour_{region}.png', img_contour)
 
-        if debug:
+        if self.debug:
             cv2.imwrite(f'{output_dir}/contours.png', image_debug)
             cv2.imwrite(f'{output_dir}/image.png', image)
 
@@ -105,8 +108,8 @@ def main(root_dataset = "/data/maestria/datasets/Candice_inbd_1500/",
          root_inbd_results = "/data/maestria/resultados/inbd_pinus_taeda_1500/candice_transfer_learning/"
             "resultados/2024-07-23_17h03m29s_INBD_100e_a6.3__"
          , output_dir = "./output"):
-
-    conversor = FromINBD2UruDendro(output_dir = output_dir )
+    debug = True
+    conversor = FromINBD2UruDendro(output_dir = output_dir, debug=debug)
 
     images_path = Path(f"{root_dataset}/InputImages").rglob("*.jpg")
     for image_path in images_path:
