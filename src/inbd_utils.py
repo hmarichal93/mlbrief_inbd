@@ -18,7 +18,6 @@ class FromINBD2UruDendro:
         return inbd_labelmap
 
 
-
     def transform_inbd_labelmap_to_contours(self, image_path, root_inbd_results, debug=True):
         image_name = Path(image_path).name
         inbd_labelmap_path = f'{root_inbd_results}/{image_name}.labelmap.npy'
@@ -102,13 +101,12 @@ class FromINBD2UruDendro:
         pdf.output(f"{self.output_dir}/output.pdf")
 
 
-def main():
-    conversor = FromINBD2UruDendro(output_dir = "./output" )
-    root_inbd_results = ("/data/maestria/resultados/inbd_pinus_taeda_1500/candice_transfer_learning/"
-                         "resultados/2024-07-23_17h03m29s_INBD_100e_a6.3__")
-    # root_inbd_results = ("/data/maestria/resultados/inbd_pinus_taeda_1500/inbd_pinus_taeda_eh_1500/"
-    #                      "resultados/2024-07-22_16h29m08s_INBD_100e_a6.3__")
-    root_dataset = "/data/maestria/datasets/Candice_inbd_1500/"
+def main(root_dataset = "/data/maestria/datasets/Candice_inbd_1500/",
+         root_inbd_results = "/data/maestria/resultados/inbd_pinus_taeda_1500/candice_transfer_learning/"
+            "resultados/2024-07-23_17h03m29s_INBD_100e_a6.3__"
+         , output_dir = "./output"):
+
+    conversor = FromINBD2UruDendro(output_dir = output_dir )
 
     images_path = Path(f"{root_dataset}/InputImages").rglob("*.jpg")
     for image_path in images_path:
@@ -129,4 +127,13 @@ def main():
     return
 
 if __name__ == "__main__":
-    main()
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--root_dataset", type=str, default="/data/maestria/datasets/Candice_inbd_1500/")
+    parser.add_argument("--root_inbd_results", type=str, default="/data/maestria/resultados/inbd_pinus_taeda_1500/candice_transfer_learning/"
+            "resultados/2024-07-23_17h03m29s_INBD_100e_a6.3__")
+    parser.add_argument("--output_dir", type=str, default="./output")
+
+    args = parser.parse_args()
+    main(args.root_dataset, args.root_inbd_results, args.output_dir)
+
