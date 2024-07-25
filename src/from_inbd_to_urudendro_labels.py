@@ -5,7 +5,9 @@ import json
 from fpdf import FPDF
 
 from lib.image import Color
-from lib.utils import polygon_2_labelme_json, write_json
+from lib.utils import polygon_2_labelme_json
+from lib.io import write_json
+
 class FromINBD2UruDendro:
     def __init__(self, output_dir=None, debug = True):
         self.debug = debug

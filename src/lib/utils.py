@@ -31,13 +31,3 @@ def polygon_2_labelme_json(chain_list, image_height, image_width,  image_path):
         labelme_json["shapes"].append(ring)
 
     return labelme_json
-
-def write_json(dict_to_save: dict, filepath: str) -> None:
-    """
-    Write dictionary to disk
-    :param dict_to_save: serializable dictionary to save
-    :param filepath: path where to save
-    :return: void
-    """
-    with open(str(filepath), 'w') as f:
-        json.dump(dict_to_save, f)
