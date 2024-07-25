@@ -121,7 +121,7 @@ def main(root_dataset = "/data/maestria/datasets/Candice_inbd_1500/",
         image_name = Path(image_path).name
         image_stem = image_name.split(".")[0]
         labelme_json = conversor.from_contour_to_urudendro(contours,  H, W, image_path,
-                                                           save_path = f'{conversor.output_dir}/{image_stem}/{image_stem}.json')
+                                                save_path = f'{conversor.output_dir}/{image_stem}/{image_stem}.json')
 
     if debug:
         conversor.generate_pdf()

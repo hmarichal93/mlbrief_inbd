@@ -15,4 +15,15 @@ Where:
 - `INBD_RESULTS_PATH` is the path to the INBD results folder.
 - `OUTPUT_PATH` is the path to the output folder.
 
+## Resize INBD dataset
+In order to resize the INBD dataset, you can use the following command:
+```bash
+python src/dataset_inbd.py --dataset_dir DATASET_PATH --output_folder OUTPUT_PATH --size SIZE
+```
+
+Where:
+- `DATASET_PATH` is the path to the dataset folder.
+- `OUTPUT_PATH` is the path to the output folder.
+- `SIZE` is the size of the images.
+
 
