@@ -87,13 +87,31 @@ class INBD:
         return
 
 
-def main(dataset_dir, output_folder, size):
+def resize_dataset(dataset_dir, output_folder, size):
     dataset = INBD( dataset_dir = dataset_dir,
                     output_dir = output_folder,
                     size = size )
     dataset.resize_dataset()
 
     return
+
+
+class InspectAnnotations:
+    def __init__(self, dataset_dir="/data/maestria/datasets/INBD/EH/", output_dir=None):
+        self.dataset_dir = dataset_dir
+        self.annotations_dir = dataset_dir + "/annotations"
+        self.output_dir = Path(output_dir)
+        self.output_dir.mkdir(parents=True, exist_ok=True)
+    def inspect_tiff_annotations(self):
+        l_annotations = list(Path(self.annotations_dir).rglob("*.tiff"))
+        for annotation in l_annotations:
+            annotation = str(annotation)
+            img = cv2.imread(annotation, cv2.IMREAD_UNCHANGED)
+            img +=1
+            #scale to 255 linearly
+            img = img * (255/np.max(img))
+
+            cv2.imwrite(str(self.output_dir / Path(annotation).name.replace('tiff','jpg')), img)
 
 if __name__ == "__main__":
     import argparse
@@ -102,8 +120,15 @@ if __name__ == "__main__":
     parser.add_argument('--dataset_dir', type=str, help='Dataset directory')
     parser.add_argument('--output_folder', type=str, help='Output folder')
     parser.add_argument('--size', type=int, help='Output image size')
+    ##resize flag
+    parser.add_argument('--resize', action='store_true', help='Resize INBD dataset')
+    parser.add_argument('--inspect', action='store_true', help='Inspect INBD annotations')
     args = parser.parse_args()
+    if args.resize:
+        resize_dataset(args.dataset_dir, args.output_folder, args.size)
 
-    main(args.dataset_dir, args.output_folder, args.size)
+    if args.inspect:
+        inspect = InspectAnnotations(dataset_dir=args.dataset_dir, output_dir=args.output_folder)
+        inspect.inspect_tiff_annotations()
 
 
