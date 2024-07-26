@@ -93,6 +93,14 @@ class Boundary(tp.NamedTuple):
         new_boundary  = self.interpolate(new_angles)
         return new_boundary
 
+    def resample_to_have_a_fixed_number_of_points(self, n:int) -> 'Boundary':
+        '''Resample boundary points to have a fixed number of points'''
+        angles      = self.compute_angles()
+        radii       = self.compute_radii()
+        new_angles  = np.linspace(angles.min(), angles.max(), n)
+        new_boundary  = self.interpolate(new_angles)
+        return new_boundary
+
     def clip_to_previous_boundary(self, prev_boundary:'Boundary') -> 'Boundary':
         radii0      = self.compute_radii()
         radii1      = prev_boundary.compute_radii()
