@@ -367,4 +367,5 @@ if __name__ == "__main__":
     ##resize flag
     args = parser.parse_args()
     build_dataset(args.dataset_dir, args.output_folder, args.size)
-    inspect_annotations(dataset_dir=args.output_folder, output_dir=Path(args.output_folder) / 'inspect')
+    inspect_annotations(dataset_dir=args.output_folder,
+                        output_dir=Path(args.output_folder) / 'inspect')
