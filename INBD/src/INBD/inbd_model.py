@@ -102,19 +102,31 @@ class INBD_Model(UNet):
             boundary     = boundary.resample(self.angular_density)
         return boundary
     
-    def process_image(self, x:tp.Union[str, SegmentationOutput], max_n=100, upscale_result=False, ) -> INBD_Output:
+    def process_image(self, x:tp.Union[str, SegmentationOutput], max_n=100, upscale_result=False, center_mask_path=None) -> INBD_Output:
         if isinstance(x, str):
             imagefile  = x
             output     = self.segmentationmodel[0].process_image(imagefile, upscale_result=False)
             x          = self.segmentationmodel[0].load_image(imagefile)
+
+            scale = self.segmentationmodel[0].scale
+            x = torchvision.transforms.ToTensor()(x)
+            x = torch.nn.functional.interpolate(x[None], scale_factor=1 / scale)[0]
+
+            import cv2
+            annotation = cv2.imread(str(center_mask_path), cv2.IMREAD_UNCHANGED)
+            # convert to gray scale
+            annotation = cv2.cvtColor(annotation, cv2.COLOR_BGR2GRAY)
+            centermask = np.zeros((annotation.shape[0], annotation.shape[1]), dtype=bool)
+            centermask[annotation > 0] = True
+            shape = output.center.shape
+            centermask = skimage.transform.resize(centermask, shape, order=0)
+
         elif isinstance(x, SegmentationOutput):
             output     = x
             raise NotImplementedError('Need imagefile')
         
-        scale      = self.segmentationmodel[0].scale
-        x          = torchvision.transforms.ToTensor()( x )
-        x          = torch.nn.functional.interpolate(x[None], scale_factor=1/scale)[0]
-        centermask = (output.center > 0)
+
+        #centermask = (output.center > 0)
 
         all_boundaries = []
         all_pgrids     = []
