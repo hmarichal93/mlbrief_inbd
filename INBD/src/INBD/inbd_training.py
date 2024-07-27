@@ -28,7 +28,13 @@ class INBD_Task(TrainingTask):
     
     def training_step(self, batch:tp.Tuple[TrainstepData, int], device='cuda', minimum_width = 256) -> tp.Tuple[torch.Tensor, tp.Dict]:
         data, l = batch
-        logger = LoggingINBD('inbd.log')
+        import os
+        from pathlib import Path
+        # Get the current file path
+        current_file_path = os.path.abspath(__file__)
+        logging_file_path = os.path.join(str(Path(current_file_path).parent.parent.parent.parent) , 'inbd.log')
+        logger = LoggingINBD(logging_file_path)
+        ###
         logs:tp.Dict[str, tp.Any]   = {}
 
         valid_rings                 = np.arange(1, data.annotation.max()+1)
