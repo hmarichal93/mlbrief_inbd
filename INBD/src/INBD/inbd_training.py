@@ -42,7 +42,7 @@ class INBD_Task(TrainingTask):
 
         boundary = boundary if boundary.boundarypoints.shape[0] > minimum_width else boundary.resample_to_have_a_fixed_number_of_points(minimum_width)
         for l in range(l, min(l+self.per_epoch_it, valid_rings.max()) ):
-            logger.write("Processing ring %d" % l)
+            #logger.write("Processing ring %d" % l)
             #print("Processing ring %d" % l)
             width     = estimate_radial_range(boundary, data.segmentation.boundary)
             if width is None:
