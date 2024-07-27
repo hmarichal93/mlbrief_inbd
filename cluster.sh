@@ -78,7 +78,7 @@ if [ "$1" == "INBD" ]; then
     INBD_MODEL=$6
     python main.py train INBD $HOME_DATASET_DIR/train_inputimages.txt $HOME_DATASET_DIR/train_annotations.txt \
            --segmentationmodel=$SEGMENTATION_MODEL --downsample 1 --output $HOME_RESULTADOS_MODEL_DIR --epochs 100\
-           --transfer_learning --model_path $INBD_MODEL# > "$stdout_file" 2> "$stderr_file"
+           --transfer_learning --model_path $INBD_MODEL > "$stdout_file" 2> "$stderr_file"
 fi
 
 
