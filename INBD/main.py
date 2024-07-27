@@ -11,7 +11,15 @@ def train(args):
         args.training_images, args.training_annotations
     )
     print('Number of files for training:  ', len(imagefiles))
+    ####
+    import os
+    from pathlib import Path
+    # Get the current file path
+    current_file_path = os.path.abspath(__file__)
+    logging_file_path = os.path.join(str(Path(current_file_path).parent.parent.parent.parent), 'inbd.log')
+    print(logging_file_path)
 
+    ###
     val_imagefiles, val_annotations = None,None
     if args.validation_images:
         val_imagefiles, val_annotations = util.read_splitfiles(
@@ -244,7 +252,7 @@ if __name__ == '__main__':
     parser_train.add_argument('--mrcnn_acc',  type=int,   default=0,     help='Mask-RCNN: accumulate rings (filled mode)')
 
     parser_train.add_argument('--lr',         type=float, default=1e-3,  help='Learning rate')
-    parser_train.add_argument('--amp',        type=bool,  default=True,  help='Mixed precision training')
+    parser_train.add_argument('--amp',        type=bool,  default=False,  help='Mixed precision training')
     parser_train.add_argument('--val_freq',   type=int,   default=1,     help='Validation frequency (epochs)')
 
     parser_train.add_argument('--output',     type=str,   default='checkpoints/',   help='Output directory')
