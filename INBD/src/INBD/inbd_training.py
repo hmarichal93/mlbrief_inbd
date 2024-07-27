@@ -27,6 +27,7 @@ class INBD_Task(TrainingTask):
         self.bd_augment     = bd_augment
     
     def training_step(self, batch:tp.Tuple[TrainstepData, int], device='cuda', minimum_width = 256) -> tp.Tuple[torch.Tensor, tp.Dict]:
+        return None, None
         data, l = batch
         import os
         from pathlib import Path
