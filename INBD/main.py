@@ -11,15 +11,6 @@ def train(args):
         args.training_images, args.training_annotations
     )
     print('Number of files for training:  ', len(imagefiles))
-    ####
-    import os
-    from pathlib import Path
-    # Get the current file path
-    current_file_path = os.path.abspath(__file__)
-    logging_file_path = os.path.join(str(Path(current_file_path).parent.parent.parent.parent), 'inbd.log')
-    print(logging_file_path)
-
-    ###
     val_imagefiles, val_annotations = None,None
     if args.validation_images:
         val_imagefiles, val_annotations = util.read_splitfiles(
