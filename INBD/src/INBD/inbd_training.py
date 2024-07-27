@@ -26,7 +26,7 @@ class INBD_Task(TrainingTask):
         self.per_epoch_it   = per_epoch_it
         self.bd_augment     = bd_augment
     
-    def training_step(self, batch:tp.Tuple[TrainstepData, int], device='cuda', minimum_width = 256) -> tp.Tuple[torch.Tensor, tp.Dict]:
+    def training_step(self, batch:tp.Tuple[TrainstepData, int], device='cuda', minimum_boundary_size = 256, minimum_width = 100) -> tp.Tuple[torch.Tensor, tp.Dict]:
         data, l = batch
         import os
         from pathlib import Path
@@ -40,10 +40,10 @@ class INBD_Task(TrainingTask):
         valid_rings                 = np.arange(1, data.annotation.max()+1)
         boundary                    = get_accumulated_boundary(data.annotation[0], l, self.basemodule.angular_density)
 
-        boundary = boundary if boundary.boundarypoints.shape[0] > minimum_width else boundary.resample_to_have_a_fixed_number_of_points(minimum_width)
+        boundary = boundary if boundary.boundarypoints.shape[0] > minimum_boundary_size else boundary.resample_to_have_a_fixed_number_of_points(minimum_boundary_size)
         for l in range(l, min(l+self.per_epoch_it, valid_rings.max()) ):
             width     = estimate_radial_range(boundary, data.segmentation.boundary)
-            if width is None:
+            if width is None or width < minimum_width:
                 #fallback
                 width     = data.segmentation.boundary.shape[1] / 4
 
@@ -51,8 +51,8 @@ class INBD_Task(TrainingTask):
                 boundary  = augment_boundary_offset(boundary) #must come after width estimation
                 boundary  = augment_boundary_rotate(boundary)
                 boundary  = augment_boundary_jump(boundary)
-                boundary = boundary if boundary.boundarypoints.shape[0] > minimum_width \
-                    else boundary.resample_to_have_a_fixed_number_of_points(minimum_width)
+                boundary = boundary if boundary.boundarypoints.shape[0] > minimum_boundary_size \
+                    else boundary.resample_to_have_a_fixed_number_of_points(minimum_boundary_size)
                 width     = augment_width(width)
 
             pgrid     = PolarGrid.construct(data.inputimage, data.segmentation, data.annotation, boundary, width, self.basemodule.concat_radii, device=device)
