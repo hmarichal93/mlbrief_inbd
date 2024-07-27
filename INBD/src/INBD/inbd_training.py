@@ -36,7 +36,6 @@ class INBD_Task(TrainingTask):
 
         boundary = boundary if boundary.boundarypoints.shape[0] > minimum_width else boundary.resample_to_have_a_fixed_number_of_points(minimum_width)
         for l in range(l, min(l+self.per_epoch_it, valid_rings.max()) ):
-            print("Estoy en el loop")
             width     = estimate_radial_range(boundary, data.segmentation.boundary)
             if width is None:
                 #fallback
@@ -58,6 +57,7 @@ class INBD_Task(TrainingTask):
                 y_pred    = self.basemodule.to(device).forward_from_polar_grid(pgrid, start_high=start_high)
             except Exception as e:
                 print(f"boundary shape {boundary.boundarypoints.shape}")
+                pass
             y_pred, w_ypred    = y_pred['x'], y_pred.get('wd_x')
             y_true    = torch.as_tensor(create_2d_target(pgrid, l+1))[None].to(device).long()
             
