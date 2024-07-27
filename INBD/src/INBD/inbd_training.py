@@ -53,8 +53,10 @@ class INBD_Task(TrainingTask):
             if self.basemodule.wd_det is not None:
                 w_ytrue    = torch.as_tensor(wedging_ring_target(pgrid, l))[None].float().to(device)
                 start_high = w_ytrue[...,0]
-
-            y_pred    = self.basemodule.to(device).forward_from_polar_grid(pgrid, start_high=start_high)
+            try:
+                y_pred    = self.basemodule.to(device).forward_from_polar_grid(pgrid, start_high=start_high)
+            except Exception as e:
+                print(f"boundary shape {boundary.boundarypoints.shape}")
             y_pred, w_ypred    = y_pred['x'], y_pred.get('wd_x')
             y_true    = torch.as_tensor(create_2d_target(pgrid, l+1))[None].to(device).long()
             
