@@ -28,7 +28,7 @@ class INBD_Task(TrainingTask):
     
     def training_step(self, batch:tp.Tuple[TrainstepData, int], device='cuda', minimum_width = 256) -> tp.Tuple[torch.Tensor, tp.Dict]:
         data, l = batch
-
+        logger = LoggingINBD('inbd.log')
         logs:tp.Dict[str, tp.Any]   = {}
 
         valid_rings                 = np.arange(1, data.annotation.max()+1)
@@ -36,6 +36,7 @@ class INBD_Task(TrainingTask):
 
         boundary = boundary if boundary.boundarypoints.shape[0] > minimum_width else boundary.resample_to_have_a_fixed_number_of_points(minimum_width)
         for l in range(l, min(l+self.per_epoch_it, valid_rings.max()) ):
+            logger.write("Processing ring %d" % l)
             width     = estimate_radial_range(boundary, data.segmentation.boundary)
             if width is None:
                 #fallback
@@ -126,7 +127,28 @@ class INBD_Task(TrainingTask):
         torch.cuda.empty_cache()
         return super().train_one_epoch(ds_train, *a, **kw)
 
+import logging
+class LoggingINBD:
+    """Logging for INBD_Task. Logs to a file and prints to stdout"""
+    def __init__(self, filename:str):
+        self.filename = filename
+        self.logger   = logging.getLogger('INBD')
+        self.logger.setLevel(logging.DEBUG)
+        self.logger.propagate = False
+        self.logger.handlers = []
+        fh = logging.FileHandler(filename)
+        fh.setLevel(logging.DEBUG)
+        ch = logging.StreamHandler()
+        ch.setLevel(logging.DEBUG)
+        formatter = logging.Formatter('%(asctime)s - %(message)s')
+        fh.setFormatter(formatter)
+        ch.setFormatter(formatter)
+        self.logger.addHandler(fh)
+        self.logger.addHandler(ch)
 
+    def write(self, msg: str):
+        self.logger.info(msg)
+        print(msg)
 
 
 def create_2d_target(pgrid:PolarGrid, ring_i:int) -> np.ndarray:
