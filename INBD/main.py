@@ -101,7 +101,7 @@ def train(args):
 
 
 def inference(args):
-    import matplotlib.cm as mplcm, PIL.Image, numpy as np, torch
+    import matplotlib.cm as mplcm, PIL.Image, numpy as np, torch, cv2
 
     if not os.path.exists(args.images):
         print(f'File {args.images} does not exist')
@@ -111,6 +111,12 @@ def inference(args):
         imagefiles = util.read_splitfile(args.images)
     elif args.images.lower().endswith('.jpg') or args.images.lower().endswith('.jpeg'):
         imagefiles = [args.images]
+    elif args.images.lower().endswith('.png'):
+        print(f'[ERROR] unknown file type: {args.images}. Converting to jpg')
+        img = cv2.imread(args.images)
+        #convert to .jpg
+        cv2.imwrite(args.images.replace(".png", ".jpg"), img)
+        imagefiles = [args.images.replace(".png", ".jpg")]
     else:
         print(f'[ERROR] unknown file type: {args.images}')
         return
@@ -118,8 +124,9 @@ def inference(args):
 
     assert os.path.exists(args.model)
     model      = util.load_model(args.model).eval().requires_grad_(False)
-    if torch.cuda.is_available():
-        model.cuda()
+    model = instantiate_model_for_debug(model)
+    #if torch.cuda.is_available():
+    #    model.cuda()
 
     modelbasename = args.model.split('/')[-2]
     outputdir     = os.path.join(args.output, f'{modelbasename}_{args.suffix}' )
@@ -130,7 +137,7 @@ def inference(args):
         print(f'[{i:4d}/{len(imagefiles)}] {os.path.basename(f)}', end='\r')
         upscale = (not args.seg)
         try:
-            output  = model.process_image(f, upscale_result=upscale)
+            output  = model.process_image(f, upscale_result=upscale, center_mask_path=args.center_mask_path)
         except Exception as e:
             print(f'Could not process image {os.path.basename(f)}: {e}')
             continue
@@ -209,7 +216,35 @@ def update(args):
 
 
 
+def instantiate_model_for_debug(model):
+    from src import INBD, segmentation
+    import torch
+    segmodel = model.segmentationmodel[0]
+    new_segmodel = segmentation.SegmentationModel(
+        backbone=segmodel.backbone_name,
+        downsample_factor=segmodel.scale
+    )
+    #device cpu
+    device = torch.device('cpu')
+    #device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    new_segmodel.load_state_dict(segmodel.state_dict())
+    new_segmodel.to(device)
+    new_model = INBD.INBD_Model(
+        new_segmodel,
+        backbone=model.backbone_name,
+        wedging_rings=model.wd_det is not None,
+        angular_density=model.angular_density,
+        concat_radii=model.concat_radii,
+        var_ares=model.var_ares,
+        interpolate_ambiguous=getattr(model, 'interpolate_ambiguous', True),  # legacy
+    )
 
+    new_model.load_state_dict(model.state_dict())
+    new_model.to(device)
+    del model
+    #free gpu memory
+    torch.cuda.empty_cache()
+    return new_model
 
 if __name__ == '__main__':
     parser     = argparse.ArgumentParser()
@@ -255,6 +290,7 @@ if __name__ == '__main__':
     parser_inf   = subparsers.add_parser('inference', help='Process images with a network')
     parser_inf.add_argument('model',       type=str, help='Path to pretrained model')
     parser_inf.add_argument('images',      type=str, help='Path to a text file containing paths to images')
+    parser_inf.add_argument('center_mask_path', type=str, help='Path to a text file containing paths to anotation')
     parser_inf.add_argument('--output',    type=str, default='inference/', help='Output directory')
     parser_inf.add_argument('--suffix',    type=str, default='',           help='Suffix/description to add to output name')
     parser_inf.add_argument('--seg',       type=bool,default=False,        help='Save only segmentation output')

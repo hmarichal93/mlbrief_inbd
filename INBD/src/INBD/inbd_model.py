@@ -102,7 +102,8 @@ class INBD_Model(UNet):
             boundary     = boundary.resample(self.angular_density)
         return boundary
     
-    def process_image(self, x:tp.Union[str, SegmentationOutput], max_n=100, upscale_result=False, center_mask_path=None) -> INBD_Output:
+    def process_image(self, x:tp.Union[str, SegmentationOutput], max_n=100, upscale_result=False, center_mask_path=None,
+                      minimum_boundary_size = 256) -> INBD_Output:
         if isinstance(x, str):
             imagefile  = x
             output     = self.segmentationmodel[0].process_image(imagefile, upscale_result=False)
@@ -131,9 +132,13 @@ class INBD_Model(UNet):
         all_boundaries = []
         all_pgrids     = []
         boundary       = detected_center_to_boundary( centermask, convex=True, angular_density=self.angular_density ) #smooth, using as starting point
+
         if boundary is not None:
             all_boundaries = [detected_center_to_boundary( centermask, convex=False, angular_density=None )] #more accurate
             for i in range(max_n):
+                boundary = boundary if boundary.boundarypoints.shape[
+                                           0] > minimum_boundary_size else boundary.resample_to_have_a_fixed_number_of_points(
+                    minimum_boundary_size)
                 width       = estimate_radial_range(boundary, output.boundary)
                 if width in [0, None]:
                     break
