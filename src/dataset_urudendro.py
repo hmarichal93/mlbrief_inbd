@@ -43,7 +43,7 @@ class TreeRingDataloader(Dataset):
         return (image, image_path, label, label_path,  disk_name)
 
 
-class PinusTaeda:
+class labelmeDataset:
     def __init__(self, dataset_dir="/data/maestria/resultados/inbd_pinus_taeda/pinus_teada/",
                  output_dir=None):
         self.dataset_dir = dataset_dir
@@ -339,7 +339,7 @@ class PinusTaeda:
 
 
 def build_dataset(dataset_dir, output_dir='/data/maestria/resultados/inbd_2', size=None):
-    dataset = PinusTaeda(dataset_dir=dataset_dir, output_dir=output_dir)
+    dataset = labelmeDataset(dataset_dir=dataset_dir, output_dir=output_dir)
     dataset.transform_annotations(size=size)
     dataset.split_dataset_in_train_val_and_test()
     train_dataloader, val_dataloader, test_dataloader = dataset.create_dataloaders()
