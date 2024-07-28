@@ -5,7 +5,7 @@ from PIL import Image
 from tqdm import tqdm
 
 from lib.io import write_json, load_json
-from dataset_urudendro import TreeRingDataloader, PinusTaeda
+from dataset_urudendro import TreeRingDataloader, labelmeDataset
 
 from INBD.src import (util)
 
@@ -22,7 +22,7 @@ class TrainingINBD:
     """
     def __init__(self, dataset_dir, output_dir, inbd_lib_path):
         self.inbd_lib_path = inbd_lib_path
-        dataset = PinusTaeda(dataset_dir=dataset_dir, output_dir=output_dir)
+        dataset = labelmeDataset(dataset_dir=dataset_dir, output_dir=output_dir)
         dataset.transform_annotations()
         dataset.split_dataset_in_train_val_and_test()
         train_dataloader, val_dataloader, test_dataloader = dataset.create_dataloaders()
