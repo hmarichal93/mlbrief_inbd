@@ -16,3 +16,5 @@ coverage==6.5.0
 
 opencv-contrib-python-headless==4.5.5.64
 fpdf==1.7.2
+shapely==1.7.0
+
