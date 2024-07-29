@@ -7,8 +7,8 @@ COPY .ipol/packages.txt packages.txt
 RUN apt-get update && apt-get install -y $(cat packages.txt) && rm -rf /var/lib/apt/lists/* && rm packages.txt
 
 # copy the requirements.txt and install python packages
-COPY requirements_cpu.txt requirements.txt
-RUN pip3 install --no-cache-dir -r requirements.txt && rm requirements.txt
+COPY INBD/requirements_cpu.txt INBD/requirements.txt
+RUN pip3 install --no-cache-dir -r INBD/requirements.txt && rm INBD/requirements.txt
 
 # copy the code to $bin
 ENV bin /workdir/bin/
