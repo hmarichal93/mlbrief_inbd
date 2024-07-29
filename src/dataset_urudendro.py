@@ -232,7 +232,7 @@ class labelmeDataset:
         :param test_size: test size
         :return:
         """
-        self.train_images_path = self.output_dir / "train_images.txt"
+        self.train_images_path = self.output_dir / "train_inputimages.txt"
         self.val_images_path = self.output_dir / "val_images.txt"
         self.test_images_path = self.output_dir / "test_images.txt"
 
