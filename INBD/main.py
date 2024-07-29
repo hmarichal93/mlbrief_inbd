@@ -278,7 +278,7 @@ if __name__ == '__main__':
     parser_train.add_argument('--mrcnn_acc',  type=int,   default=0,     help='Mask-RCNN: accumulate rings (filled mode)')
 
     parser_train.add_argument('--lr',         type=float, default=1e-3,  help='Learning rate')
-    parser_train.add_argument('--amp',        type=bool,  default=False,  help='Mixed precision training')
+    parser_train.add_argument('--amp',        type=bool,  default=True,  help='Mixed precision training')
     parser_train.add_argument('--val_freq',   type=int,   default=1,     help='Validation frequency (epochs)')
 
     parser_train.add_argument('--output',     type=str,   default='checkpoints/',   help='Output directory')
