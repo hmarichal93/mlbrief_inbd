@@ -113,7 +113,8 @@ def main(root_dataset = "/data/maestria/datasets/Candice_inbd_1500/",
     debug = True
     conversor = FromINBD2UruDendro(output_dir = output_dir, debug=debug)
 
-    images_path = Path(f"{root_dataset}/InputImages").rglob("*.jpg")
+
+    images_path = [Path(root_dataset)] if Path(root_dataset).is_file() else Path(f"{root_dataset}/InputImages").rglob("*.jpg")
     for image_path in images_path:
         conversor.transform_inbd_labelmap_to_contours(image_path, root_inbd_results)
         contours, image = conversor.transform_inbd_labelmap_to_contours(image_path, root_inbd_results)
