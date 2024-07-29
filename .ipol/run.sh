@@ -18,5 +18,5 @@ python $BIN/.ipol/preprocessing.py --input_poly $input_1 --input_img $input_0 --
 python $BIN/INBD/main.py inference $BIN/models/$model $input_0 $output_0 --output $HOME/output/
 
 #process the output to get the final result
-python $BIN/src/from_inbd_to_urudendro_labels.py --root_dataset ROOT_DATASET --root_inbd_results INFERENCE_OUTPUT --output_dir OUTPUT_DIR
+python $BIN/src/from_inbd_to_urudendro_labels.py --root_dataset $input_0 --root_inbd_results $HOME/output/ --output_dir $HOME/output/
 
