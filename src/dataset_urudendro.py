@@ -97,10 +97,8 @@ class labelmeDataset:
             img_path = Path(self.images_dir).rglob(f"segmented/{img_name}.*").__next__()  # get the image path
             img = cv2.imread(str(img_path))
 
-            # pith_size = 3 if disk_name in disk_with_small_pith else 3
-            # pith_size = self.__get_minimum_ring_area_index(annotation, img)
-            pith_size = 1
-            segmentation_mask, boundaries_mask = self.annotation_to_mask(annotation, img, pith_size=pith_size,
+
+            segmentation_mask, boundaries_mask = self.annotation_to_mask(annotation, img, pith_size=1,
                                                                          size=size)
             if size:
                 img = resize_image_using_pil_lib(img, size, size)
@@ -164,7 +162,7 @@ class labelmeDataset:
         l_rings.sort(key=lambda x: x.area, reverse=False)
         return l_rings
 
-    def annotation_to_mask(self, annotation, img, size=None, pith_size=0):
+    def annotation_to_mask(self, annotation, img, size=None, pith_size=1):
         """
         Transform annotation to mask
         :param annotation: annotation path
@@ -195,7 +193,7 @@ class labelmeDataset:
         # 2.0 fill mask
         for i, ring in enumerate(l_rings):
             # 2.2 draw area
-            if i < pith_size + 1:
+            if i < pith_size:
                 # fill poly
                 cv2.fillPoly(boundaries_mask, [np.array(ring.exterior.coords, dtype=np.int32)], 1)
                 # 2.3 draw ring boundaries
@@ -301,8 +299,11 @@ class labelmeDataset:
         """
         from PIL import Image
         # Image.ANTIALIAS is deprecated, PIL recommends using Reampling.LANCZOS
-        # flag = Image.ANTIALIAS
-        flag = Image.Resampling.LANCZOS
+        try:
+            flag = Image.Resampling.LANCZOS
+        except AttributeError:
+            flag = Image.ANTIALIAS
+
         if keep_ratio:
             aspect_ratio = pil_img.height / pil_img.width
             if pil_img.width > pil_img.height:
@@ -324,7 +325,7 @@ class labelmeDataset:
         images = []
         # generate pdf
         for idx in range(dataloader.__len__()):
-            image, annotation, disk_name = dataloader.__getitem__(idx)
+            image,_, annotation, _,disk_name = dataloader.__getitem__(idx)
             image = self.convert_numpy_image_to_pil_image(image)
             image_r = self.reshape_using_pil_lib(image, shape, shape)
             images.append(image_r)
