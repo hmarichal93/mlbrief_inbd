@@ -16,3 +16,6 @@ python $BIN/.ipol/preprocessing.py --input_poly $input_1 --input_img $input_0 --
 
 python $BIN/INBD/main.py inference $BIN/models/$model $input_0 $output_0 --output $HOME/output/
 
+#process the output to get the final result
+python $BIN/src/
+
