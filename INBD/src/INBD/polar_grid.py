@@ -97,7 +97,11 @@ def estimate_distances_to_next_boundary(boundary:Boundary, segmentation:np.ndarr
 
 def estimate_radial_range(boundary:Boundary, segmentation:np.ndarray, **kw) -> tp.Union[float, None]:
     '''Estimate how far to sample along the radial dimension'''
-    distances  = estimate_distances_to_next_boundary(boundary, segmentation, **kw)
+    try:
+        distances  = estimate_distances_to_next_boundary(boundary, segmentation, **kw)
+    except ValueError:
+        return None
+
     finitemask = np.isfinite(distances)
     if np.mean(finitemask) < 0.05:
         return None
