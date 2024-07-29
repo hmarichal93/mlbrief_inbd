@@ -269,7 +269,7 @@ if __name__ == '__main__':
     parser_train.add_argument('--radcat',          type=int,   default=1,    help='Concatenate radii as input for the INBD network')  #bool
     parser_train.add_argument('--angular-density', type=float, default=6.28, help='Hyperparameter alpha')
     parser_train.add_argument('--per_epoch_it',    type=int,   default=3,    help='Number of iterations per training epoch')
-    parser_train.add_argument('--bd_augment',      type=int,   default=1,    help='Boundary augmentations')
+    parser_train.add_argument('--bd_augment',      type=int,   default=0,    help='Boundary augmentations')
     parser_train.add_argument('--var_ares',        type=int,   default=1,    help='Variable angular resolution')
     parser_train.add_argument('--interpolate_ambiguous', type=int, default=1, help='Interpolate ambiguous boundary points')
     
