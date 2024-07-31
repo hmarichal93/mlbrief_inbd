@@ -12,7 +12,7 @@ def generate_annotation_mask(annotation_path:str, output_dir:str):
 
     kernel = np.ones((5, 5), np.uint8)
     mask = cv2.dilate(mask, kernel, iterations=2)
-    output_path = Path(output_dir) / Path(annotation_path).stem + ".png"
+    output_path = Path(output_dir) /  f"{Path(annotation_path).stem}.png"
     cv2.imwrite(str(output_path), mask)
     return
 
@@ -23,8 +23,9 @@ def main(input_images_path, input_annotations_path, root_dataset, output_dir, in
     center_mask_dir = Path(output_dir) / "center"
     center_mask_dir.mkdir(parents=True, exist_ok=True)
     for idx, row in df_annotations.iterrows():
-        annotation_path = row.iloc[idx].values
-        generate_annotation_mask(annotation_path, output_dir)
+        annotation_path = row.iloc[0]
+        annotation_path = Path(root_dataset) / annotation_path
+        generate_annotation_mask( str(annotation_path), str(center_mask_dir))
 
     # 2.0 run INBD inference
     # 2.1 get script file path
@@ -35,8 +36,8 @@ def main(input_images_path, input_annotations_path, root_dataset, output_dir, in
     inbd_results_dir = Path(output_dir) / "inbd_results"
     import subprocess
     for idx, row in df_images.iterrows():
-        image_path = Path(root_dataset) / row.iloc[idx].values
-        center_mask_path = center_mask_dir / Path(image_path).stem + ".png"
+        image_path = Path(root_dataset) / row.iloc[idx]
+        center_mask_path = center_mask_dir /  f"{Path(image_path).stem}.png"
         cmd = f"python {inbd_path} {inbd_model_path} {image_path} {center_mask_path} --output {inbd_results_dir}"
         subprocess.run(cmd, shell=True)
 
