@@ -38,7 +38,7 @@ def main(input_images_path, input_annotations_path, root_dataset, output_dir, in
     for idx, row in df_images.iterrows():
         image_path = Path(root_dataset) / row.iloc[idx]
         center_mask_path = center_mask_dir /  f"{Path(image_path).stem}.png"
-        cmd = f"python {inbd_path} {inbd_model_path} {image_path} {center_mask_path} --output {inbd_results_dir}"
+        cmd = f"python inference {inbd_path} {inbd_model_path} {image_path} {center_mask_path} --output {inbd_results_dir}"
         subprocess.run(cmd, shell=True)
 
     return
