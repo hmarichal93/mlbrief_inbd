@@ -103,7 +103,7 @@ class INBD_Model(UNet):
         return boundary
     
     def process_image(self, x:tp.Union[str, SegmentationOutput], max_n=100, upscale_result=False, center_mask_path=None,
-                      minimum_boundary_size = 256) -> INBD_Output:
+                      minimum_boundary_size = 256, background_threshold=0.95) -> INBD_Output:
         if isinstance(x, str):
             imagefile  = x
             output     = self.segmentationmodel[0].process_image(imagefile, upscale_result=False)
@@ -141,13 +141,21 @@ class INBD_Model(UNet):
                     minimum_boundary_size)
                 width       = estimate_radial_range(boundary, output.boundary)
                 if width in [0, None]:
-                    break
+                    # fallback
+                    width = shape[1] / 4
+                    #break
                 pgrid       = PolarGrid.construct(x, output, None, boundary, width, self.concat_radii)
                 y_pred      = self.forward_from_polar_grid(pgrid)
                 y_pred      = y_pred['x']
                 boundary    = self.output_to_boundary(y_pred[0].cpu(), boundary, pgrid)
                 all_boundaries.append(boundary)
                 all_pgrids.append(pgrid)
+
+                #stop condition
+                total_pixels = pgrid.image.shape[1] * pgrid.image.shape[2]
+                sum_pixels_white = (pgrid.image == 1).sum() / 3
+                if sum_pixels_white > total_pixels * background_threshold:
+                    break
         #TODO: scale boundaries
         labelmap = boundaries_to_labelmap(all_boundaries, centermask.shape, filter_threshold=0, scale=1 if not upscale_result else self.scale)
         #NOTE: currently not applying background due to issues in downstream tasks
