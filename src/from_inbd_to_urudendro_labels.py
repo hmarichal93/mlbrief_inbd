@@ -3,11 +3,12 @@ import cv2
 from pathlib import Path
 import json
 from fpdf import FPDF
+from shapely.geometry import Polygon, Point
 
 from lib.image import Color
 from lib.utils import polygon_2_labelme_json
 from lib.io import write_json
-
+from uruDendro.lib import drawing as dr
 class FromINBD2UruDendro:
     def __init__(self, output_dir=None, debug = True):
         self.debug = debug
@@ -22,12 +23,35 @@ class FromINBD2UruDendro:
         inbd_labelmap = np.load(inbd_labelmap_path)
         return inbd_labelmap
 
+    def make_contour_of_thickness_one(self, contour, inbd_labelmap, output_dir=None):
+        mask = np.zeros_like(inbd_labelmap)
+        mask = dr.Drawing.curve(Polygon(contour[:,[1,0]].tolist()).exterior, mask, 255, 1)
+        if output_dir:
+            cv2.imwrite(f'{output_dir}/mask.png', mask)
+        mask = mask > 0
+        # apply skeleton operation over mask skimage
+        from skimage.morphology import skeletonize
+        # Apply skeleton operation over mask using skimage
+        mask = skeletonize(mask.astype(np.uint8))  # get contours of mask
+        contours, _ = cv2.findContours(mask.astype(np.uint8), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        contour = contours[0].squeeze()
+        if output_dir:
+            mask = np.zeros_like(inbd_labelmap)
+            mask = dr.Drawing.curve(Polygon(contour[:, [1, 0]].tolist()).exterior, mask, 255, 1)
+            cv2.imwrite(f'{output_dir}/skeleton.png', mask)
 
-    def transform_inbd_labelmap_to_contours(self, image_path, root_inbd_results):
+        return contour
+
+    def transform_inbd_labelmap_to_contours(self, image_path, center_mask_path, root_inbd_results, minimum_pixels=50):
         image_name = Path(image_path).name
         inbd_labelmap_path = f'{root_inbd_results}/{image_name}.labelmap.npy'
         if not Path(inbd_labelmap_path).exists():
             return [], None
+        if not Path(center_mask_path).exists():
+            raise "center mask not found"
+        center_mask = cv2.imread(center_mask_path, cv2.IMREAD_UNCHANGED)
+        cy, cx = np.argwhere(center_mask).mean(0).tolist()
+
 
         image = cv2.imread(image_path)
         image_debug = image.copy()
@@ -46,11 +70,22 @@ class FromINBD2UruDendro:
             mask[region_mask] = 255
             # get contours of region
             contours, _ = cv2.findContours(mask.astype(np.uint8), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-
             if len(contours) == 0:
                 continue
 
-            contours_list.append(contours[0].squeeze())
+            #Contour must have a thickness == 1
+            contour = contours[0].squeeze()
+            if contour.ndim == 1:
+                continue
+            if contour.shape[0] < minimum_pixels:
+                continue
+
+            #contour = self.make_contour_of_thickness_one(contour, inbd_labelmap)#, output_dir)
+            contour_poly = Polygon(contour[:, [1, 0]].tolist())
+            if not contour_poly.contains(Point(cy,cx)):
+                continue
+
+            contours_list.append(contour)
             # draw contours on image
             if self.debug:
                 img_contour = image.copy()
@@ -108,30 +143,40 @@ class FromINBD2UruDendro:
 
 def main(root_dataset = "/data/maestria/datasets/Candice_inbd_1500/",
          root_inbd_results = "/data/maestria/resultados/inbd_pinus_taeda_1500/candice_transfer_learning/"
-            "resultados/2024-07-23_17h03m29s_INBD_100e_a6.3__"
+            "resultados/2024-07-23_17h03m29s_INBD_100e_a6.3__",
+         center_mask_dir = "/data/maestria/resultados/mlbrief_PinusTaedaV1_1500/inference/center"
          , output_dir = "./output"):
     debug = True
-    conversor = FromINBD2UruDendro(output_dir = output_dir, debug=debug)
 
+    output_dir = Path(output_dir) / "inbd_urudendro_labels"
+    output_dir.mkdir(parents=True, exist_ok=True)
+    output_dir = str(output_dir)
+
+    conversor = FromINBD2UruDendro(output_dir = output_dir, debug=debug)
 
     images_path = [Path(root_dataset)] if Path(root_dataset).is_file() else Path(f"{root_dataset}/InputImages").rglob("*.jpg")
     for image_path in images_path:
-        conversor.transform_inbd_labelmap_to_contours(image_path, root_inbd_results)
-        contours, image = conversor.transform_inbd_labelmap_to_contours(image_path, root_inbd_results)
+        center_mask_path = Path(center_mask_dir) / (Path(image_path).stem + ".png")
+        contours, image = conversor.transform_inbd_labelmap_to_contours( image_path, center_mask_path, root_inbd_results)
         if len(contours)==0:
             continue
         H, W, _ = image.shape
         image_name = Path(image_path).name
         image_stem = image_name.split(".")[0]
+        output_dir_image = Path(output_dir) / image_stem
+        output_dir_image.mkdir(parents=True, exist_ok=True)
+
+        #print(image_label_path)
+        image_label_path = f'{str(output_dir_image)}/{image_stem}.json'
         labelme_json = conversor.from_contour_to_urudendro(contours,  H, W, image_path,
-                                                save_path = f'{conversor.output_dir}/{image_stem}/{image_stem}.json')
+                                                save_path = image_label_path)
 
     if debug:
         conversor.generate_pdf()
 
+    print(f"Labels are stored in {output_dir}")
 
-
-    return
+    return output_dir
 
 if __name__ == "__main__":
     import argparse
@@ -142,5 +187,5 @@ if __name__ == "__main__":
     parser.add_argument("--output_dir", type=str, default="./output")
 
     args = parser.parse_args()
-    main(args.root_dataset, args.root_inbd_results, args.output_dir)
+    main(root_dataset= args.root_dataset,root_inbd_results = args.root_inbd_results, output_dir=  args.output_dir)
 
