@@ -156,8 +156,9 @@ def main(root_dataset = "/data/maestria/datasets/Candice_inbd_1500/",
 
     images_path = [Path(root_dataset)] if Path(root_dataset).is_file() else Path(f"{root_dataset}/InputImages").rglob("*.jpg")
     for image_path in images_path:
-        center_mask_path = Path(center_mask_dir) / (Path(image_path).stem + ".png")
-        contours, image = conversor.transform_inbd_labelmap_to_contours( image_path, center_mask_path, root_inbd_results)
+        center_mask_path = Path(center_mask_dir) / (Path(image_path).stem + ".png") if Path(center_mask_dir).is_dir()\
+            else center_mask_dir
+        contours, image = conversor.transform_inbd_labelmap_to_contours( str(image_path), center_mask_path, root_inbd_results)
         if len(contours)==0:
             continue
         H, W, _ = image.shape
@@ -182,9 +183,13 @@ if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument("--root_dataset", type=str, default="/data/maestria/datasets/Candice_inbd_1500/")
-    parser.add_argument("--root_inbd_results", type=str, default="/data/maestria/resultados/inbd_pinus_taeda_1500/candice_transfer_learning/"
-            "resultados/2024-07-23_17h03m29s_INBD_100e_a6.3__")
+    parser.add_argument("--root_inbd_results", type=str,
+                        default="/data/maestria/resultados/inbd_pinus_taeda_1500/candice_transfer_learning/"
+                          "resultados/2024-07-23_17h03m29s_INBD_100e_a6.3__")
     parser.add_argument("--output_dir", type=str, default="./output")
+    parser.add_argument("--center_mask_dir", type=str,
+                        default="/data/maestria/resultados/mlbrief_PinusTaedaV1_1500/inference/center)")
 
     args = parser.parse_args()
-    main(root_dataset= args.root_dataset,root_inbd_results = args.root_inbd_results, output_dir=  args.output_dir)
+    main(root_dataset= args.root_dataset,root_inbd_results = args.root_inbd_results, output_dir=  args.output_dir,
+         center_mask_dir= args.center_mask_dir)
