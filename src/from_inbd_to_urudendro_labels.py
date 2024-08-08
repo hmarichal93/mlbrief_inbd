@@ -8,7 +8,7 @@ from shapely.geometry import Polygon, Point
 from lib.image import Color
 from lib.utils import polygon_2_labelme_json
 from lib.io import write_json
-from uruDendro.lib import drawing as dr
+from ..uruDendro.lib import drawing as dr
 class FromINBD2UruDendro:
     def __init__(self, output_dir=None, debug = True):
         self.debug = debug
