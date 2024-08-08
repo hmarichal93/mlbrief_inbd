@@ -49,7 +49,7 @@ class TrainingINBD:
 
         except StopIteration:
             command = (f"cd {self.inbd_lib_path} && python main.py train segmentation  {self.train_dataloader.images_path} {self.train_dataloader.annotations_path} "
-                      # f"--validation_images {self.val_dataloader.images_path} --validation_annotations {self.val_dataloader.annotations_path} "
+                      # f"--validation_images {self.val_dataloader.original_images_dir} --validation_annotations {self.val_dataloader.annotations_path} "
                        f"--downsample {downsample} --output {output_model_dir}")
             print(command)
             self.__run_command(command)
@@ -97,7 +97,7 @@ class TrainingINBD:
     def train_inbd_network(self, epocs = 1, downsample=4, angular_density=6.28,  output_dir=None, segmentation_model= None):
 
         command = (f"cd {self.inbd_lib_path} && python main.py train INBD {self.train_dataloader.images_path} {self.train_dataloader.annotations_path} "
-                   #f"--validation_images {self.val_dataloader.images_path} --validation_annotations {self.val_dataloader.annotations_path} "
+                   #f"--validation_images {self.val_dataloader.original_images_dir} --validation_annotations {self.val_dataloader.annotations_path} "
                    f"--downsample {downsample} --output {output_dir} --segmentationmodel={segmentation_model} --per_epoch_it {epocs} --angular-density {angular_density}")
         print(command)
         self.__run_command(command)

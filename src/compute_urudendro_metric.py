@@ -104,11 +104,14 @@ def main(annotations_file_path = "/data/maestria/resultados/mlbrief_PinusTaedaV1
          inbd_inference_results_dir = "/data/maestria/resultados/mlbrief_PinusTaedaV1_1500/inference/inbd_results/inbd_/inbd_urudendro_labels",
          inbd_center_mask_dir = "/data/maestria/resultados/mlbrief_PinusTaedaV1_1500/inference/center"):
 
+    #1)Initializations
     annotations_original_dataset_dir = f"{root_original_dataset}/anotaciones/labelme/images"
     df_annotations = pd.read_csv(annotations_file_path, header=None)
     original_images_dir = Path(root_original_dataset) / "images/segmented"
     rows = []
     Path(output_dir).mkdir(parents=True, exist_ok=True)
+
+    #2) Loop over the annotations
     for idx, row in df_annotations.iterrows():
         annotation_path = row.iloc[0]
         cx, cy = get_center_pixel(annotation_path, inbd_center_mask_dir)
