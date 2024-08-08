@@ -102,7 +102,7 @@ class FromINBD2UruDendro:
             cv2.imwrite(f'{output_dir}/contours.png', image_debug)
             cv2.imwrite(f'{output_dir}/image.png', image)
             print(f"Contour images are stored in {output_dir}")
-            os.system(f"ls -lah {output_dir}")
+            print(Path(output_dir).glob("*.png"))
 
 
         return contours_list, image
