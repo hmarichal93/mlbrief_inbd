@@ -11,6 +11,9 @@ wsize=$6
 hsize=$7
 model=$8
 
+# add directory to PYTHONPATH
+export PYTHONPATH=/workdir/bin:$PYTHONPATH
+
 # Extract center from mask
 python $BIN/.ipol/preprocessing.py --input_poly $input_1 --input_img $input_0 --mask_path $output_0 --hsize $hsize --wsize $wsize
 
