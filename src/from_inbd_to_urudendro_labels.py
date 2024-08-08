@@ -176,7 +176,7 @@ def main(root_dataset = "/data/maestria/datasets/Candice_inbd_1500/",
         conversor.generate_pdf()
 
     print(f"Labels are stored in {output_dir}")
-
+    raise
     return output_dir
 
 if __name__ == "__main__":
