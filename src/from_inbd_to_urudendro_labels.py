@@ -179,7 +179,7 @@ def main(root_dataset = "/data/maestria/datasets/Candice_inbd_1500/",
         conversor.generate_pdf()
 
     print(f"Labels are stored in {output_dir_image}")
-
+    raise
     return output_dir
 
 if __name__ == "__main__":
@@ -194,5 +194,5 @@ if __name__ == "__main__":
                         default="/data/maestria/resultados/mlbrief_PinusTaedaV1_1500/inference/center)")
 
     args = parser.parse_args()
-    main(root_dataset= args.root_dataset,root_inbd_results = args.root_inbd_results, output_dir=  args.output_dir,
+    main(root_dataset= args.root_dataset, root_inbd_results = args.root_inbd_results, output_dir=  args.output_dir,
          center_mask_dir= args.center_mask_dir)
