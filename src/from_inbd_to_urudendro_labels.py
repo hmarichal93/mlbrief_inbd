@@ -43,8 +43,9 @@ class FromINBD2UruDendro:
         return contour
 
     def transform_inbd_labelmap_to_contours(self, image_path, center_mask_path, root_inbd_results, minimum_pixels=50):
-        image_name = Path(image_path).name
-        inbd_labelmap_path = f'{root_inbd_results}/{image_name}.labelmap.npy'
+        image_name = Path(image_path).stem
+        label_name = f"{image_name}*.labelmap.npy"
+        inbd_labelmap_path = f'{root_inbd_results}/{label_name}'
         if not Path(inbd_labelmap_path).exists():
             return [], None
         if not Path(center_mask_path).exists():
