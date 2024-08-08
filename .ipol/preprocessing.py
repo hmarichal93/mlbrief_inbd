@@ -70,6 +70,9 @@ def resize_image(img_path, mask_path, hsize, wsize):
     cv2.imwrite(img_path, img_r)
     cv2.imwrite(mask_path, mask_r)
 
+    print(mask.shape)
+    raise
+
     return
 
 
