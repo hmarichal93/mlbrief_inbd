@@ -57,6 +57,8 @@ class FromINBD2UruDendro:
 
 
         image = cv2.imread(image_path)
+        if image is None:
+            raise ValueError(f"Image {image_path} not found")
         image_debug = image.copy()
         inbd_labelmap = self.load_inbd_labelmap(inbd_labelmap_path)
         region_ids = np.unique(inbd_labelmap)
@@ -100,6 +102,7 @@ class FromINBD2UruDendro:
         if self.debug:
             import os
             cv2.imwrite(f'{output_dir}/contours.png', image_debug)
+            print(image_debug)
             cv2.imwrite(f'{output_dir}/image.png', image)
             print(f"Contour images are stored in {output_dir}")
             print(Path(output_dir).glob("*.png"))
