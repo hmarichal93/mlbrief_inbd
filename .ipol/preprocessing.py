@@ -61,6 +61,8 @@ def resize_image(img_path, mask_path, hsize, wsize):
 
     img_r = resize_image_using_pil_lib(img, hsize, wsize)
     mask_r = resize_image_using_pil_lib(mask, hsize, wsize)
+    #convert mask_r to 2 channels
+    mask_r = cv2.cvtColor(mask_r, cv2.COLOR_BGR2GRAY)
 
 
     import os
@@ -70,8 +72,7 @@ def resize_image(img_path, mask_path, hsize, wsize):
     cv2.imwrite(img_path, img_r)
     cv2.imwrite(mask_path, mask_r)
 
-    print(mask.shape)
-    raise
+
 
     return
 
