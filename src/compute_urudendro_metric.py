@@ -41,8 +41,8 @@ def main(annotations_file_path = "/data/maestria/resultados/mlbrief_PinusTaedaV1
     annotations_original_dataset_dir = f"{root_original_dataset}/anotaciones/labelme/images"
     df_annotations = pd.read_csv(annotations_file_path, header=None)
     images_path = Path(root_original_dataset) / "images/segmented"
-
-
+    #genearte dataframe with this columns P, R, F, RMSE, TP, FP, TN, FN
+    rows = []
     Path(output_dir).mkdir(parents=True, exist_ok=True)
     for idx, row in df_annotations.iterrows():
         annotation_path = row.iloc[0]
@@ -122,15 +122,15 @@ def main(annotations_file_path = "/data/maestria/resultados/mlbrief_PinusTaedaV1
         P, R, F, RMSE, TP, FP, TN, FN = urudendro_metric(dt_file=dt_output_path, gt_file=gt_filename,
                                     img_filename=img_filename, cx=cx, cy=cy, output_dir=output_dir_image, threshold=0.6)
 
+        row = {"image": disk_name, "P": P, "R": R, "F": F, "RMSE": RMSE, "TP": TP, "FP": FP, "TN": TN, "FN": FN}
+        #add row to dataset but not use append
+        rows.append(row)
 
-
-
-
-
-
-
-
-
+    # Create DataFrame from the list of rows
+    df_metric = pd.concat([pd.DataFrame([row]) for row in rows], ignore_index=True)
+    #add the mean of the metrics
+    #df_metric.loc['mean'] = df_metric.mean()
+    df_metric.to_csv(f"{output_dir}/metric_urudendro.csv", index=False)
 
     return
 
