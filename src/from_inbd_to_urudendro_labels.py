@@ -44,10 +44,12 @@ class FromINBD2UruDendro:
 
     def transform_inbd_labelmap_to_contours(self, image_path, center_mask_path, root_inbd_results, minimum_pixels=50):
         image_name = Path(image_path).stem
-        label_name = f"{image_name}*.labelmap.npy"
-        inbd_labelmap_path = f'{root_inbd_results}/{label_name}'
-        if not Path(inbd_labelmap_path).exists():
+        label_name = f"{image_name}*"
+        inbd_labelmap_path = [  path for path in  Path(root_inbd_results).glob(label_name) if "labelmap.npy" in path.name]
+        if len(inbd_labelmap_path)==0:
+            print(inbd_labelmap_path)
             return [], None
+        inbd_labelmap_path = inbd_labelmap_path[0]
         if not Path(center_mask_path).exists():
             raise "center mask not found"
         center_mask = cv2.imread(center_mask_path, cv2.IMREAD_UNCHANGED)
@@ -177,7 +179,7 @@ def main(root_dataset = "/data/maestria/datasets/Candice_inbd_1500/",
         conversor.generate_pdf()
 
     print(f"Labels are stored in {output_dir_image}")
-    raise
+
     return output_dir
 
 if __name__ == "__main__":
