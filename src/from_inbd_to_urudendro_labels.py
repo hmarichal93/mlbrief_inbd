@@ -100,6 +100,8 @@ class FromINBD2UruDendro:
         if self.debug:
             cv2.imwrite(f'{output_dir}/contours.png', image_debug)
             cv2.imwrite(f'{output_dir}/image.png', image)
+            print(f"Contour images are stored in {output_dir}")
+
 
         return contours_list, image
 
@@ -179,7 +181,7 @@ def main(root_dataset = "/data/maestria/datasets/Candice_inbd_1500/",
         conversor.generate_pdf()
 
     print(f"Labels are stored in {output_dir_image}")
-
+    raise
     return output_dir
 
 if __name__ == "__main__":
