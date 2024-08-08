@@ -158,4 +158,18 @@ def main(annotations_file_path = "/data/maestria/resultados/mlbrief_PinusTaedaV1
 
 
 if __name__ == "__main__":
-    main()
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--annotations_file_path", type=str,
+                        default="/data/maestria/resultados/mlbrief_PinusTaedaV1_1500/test_and_val_annotations.txt")
+    parser.add_argument("--root_original_dataset", type=str,
+                        default="/data/maestria/resultados/mlbrief_inbd/PinusTaedaV1")
+    parser.add_argument("--output_dir", type=str, default="/data/maestria/resultados/mlbrief_PinusTaedaV1_1500/inference/inbd_results/inbd_/inbd_urudendro_labels_original_shape")
+    parser.add_argument("--inbd_inference_results_dir", type=str,
+                        default="/data/maestria/resultados/mlbrief_PinusTaedaV1_1500/inference/inbd_results/inbd_/inbd_urudendro_labels")
+    parser.add_argument("--inbd_center_mask_dir", type=str, default="/data/maestria/resultados/mlbrief_PinusTaedaV1_1500/inference/center")
+
+    args = parser.parse_args()
+    main(annotations_file_path=args.annotations_file_path, root_original_dataset=args.root_original_dataset,
+         output_dir=args.output_dir, inbd_inference_results_dir=args.inbd_inference_results_dir,
+         inbd_center_mask_dir=args.inbd_center_mask_dir)
