@@ -100,12 +100,11 @@ class FromINBD2UruDendro:
                 #cv2.imwrite(f'{output_dir}/contour_{region}.png', img_contour)
 
         if self.debug:
-            import os
             cv2.imwrite(f'{output_dir}/contours.png', image_debug)
             print(image_debug)
             cv2.imwrite(f'{output_dir}/image.png', image)
             print(f"Contour images are stored in {output_dir}")
-            print(Path(output_dir).glob("*.png"))
+            print([filename for filename in Path(output_dir).glob("*.png")])
 
 
         return contours_list, image
