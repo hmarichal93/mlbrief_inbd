@@ -175,7 +175,7 @@ def main(root_dataset = "/data/maestria/datasets/Candice_inbd_1500/",
     if debug:
         conversor.generate_pdf()
 
-    print(f"Labels are stored in {output_dir}")
+    print(f"Labels are stored in {output_dir_image}")
     raise
     return output_dir
 
