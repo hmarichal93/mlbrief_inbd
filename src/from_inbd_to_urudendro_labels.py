@@ -188,4 +188,3 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     main(root_dataset= args.root_dataset,root_inbd_results = args.root_inbd_results, output_dir=  args.output_dir)
-

@@ -130,7 +130,9 @@ def inference(args):
 
     modelbasename = args.model.split('/')[-2]
     outputdir     = os.path.join(args.output, f'{modelbasename}_{args.suffix}' )
-    os.makedirs(outputdir, exist_ok=True)
+    from pathlib import Path
+    Path(outputdir).mkdir(parents=True, exist_ok=True)
+    #os.makedirs(outputdir,exist_ok=True)
     print(f'Saving outputs to: {outputdir}')
 
     for i,f in enumerate(imagefiles):

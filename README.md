@@ -1,7 +1,7 @@
-# mlbrief_inbd
+# MLBrief: INBD
 
 
-## Conda environment
+##
 
 
 ## Transform INBD prediction to UruDendro format
