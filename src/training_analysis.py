@@ -19,26 +19,44 @@ class TrainingAnalysis:
 
     def parse_data(self, data):
         cse, acc, w_loss, w_acc, lr = [], [], [], [], []
+        results = {}
         for line in data:
             line = line.replace("\n","")
             line = line.split("|")
+            epocs, percentage = line[0], line[1]
+            percentage = float(percentage.split("]")[0] )
+            epocs = float(epocs.split("[")[1])
+            results[str(epocs)] = {}
 
             for l in line:
-
                 if "cse" in l:
-                    cse.append(float(l.split(":")[1]))
+                    cse = float(l.split(":")[1])
 
                 elif "acc" in l and "w_acc" not in l:
-                    acc.append(float(l.split(":")[1]))
+                    acc = float(l.split(":")[1])
 
                 elif "w_loss" in l:
-                    w_loss.append(float(l.split(":")[1]))
+                    w_loss = float(l.split(":")[1])
 
                 elif "w_acc" in l:
-                    w_acc.append(float(l.split(":")[1]))
+                    w_acc = float(l.split(":")[1])
 
                 elif "lr" in l:
-                    lr.append(float(l.split(":")[1]))
+                    lr = float(l.split(":")[1])
+
+            ###
+            results[str(epocs)]["cse"] = cse
+            results[str(epocs)]["acc"] = acc
+            results[str(epocs)]["w_loss"] = w_loss
+            results[str(epocs)]["w_acc"] = w_acc
+            results[str(epocs)]["lr"] = lr
+
+        cse = [results[str(epocs)]["cse"] for epocs in results.keys()]
+        acc = [results[str(epocs)]["acc"] for epocs in results.keys()]
+        w_loss = [results[str(epocs)]["w_loss"] for epocs in results.keys()]
+        w_acc = [results[str(epocs)]["w_acc"] for epocs in results.keys()]
+        lr = [results[str(epocs)]["lr"] for epocs in results.keys()]
+
 
         data = pd.DataFrame({"cse": cse, "acc": acc, "w_loss": w_loss, "w_acc": w_acc, "lr": lr})
 
