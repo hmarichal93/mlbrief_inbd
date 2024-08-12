@@ -68,7 +68,7 @@ def transform_inbd_detection_to_original_image_size(df_filename_inbd, H, W, h, w
     l_list = []
     for idx, r in enumerate(rings):
         y, x = r.exterior.coords.xy
-        if not r.contains(Point(cy,cx)):
+        if not r.contains(Point(cx,cy)):
             continue
         #if all the pixels defined in y,x are outside the image mask (image_mask), then skip this ring
         if all([image_mask[int(yi), int(xi)] == 0 for yi, xi in zip(y, x)]):
@@ -114,6 +114,8 @@ def main(annotations_file_path = "/data/maestria/resultados/mlbrief_PinusTaedaV1
     #2) Loop over the annotations
     for idx, row in df_annotations.iterrows():
         annotation_path = row.iloc[0]
+        disk_name = Path(annotation_path).stem
+
         cx, cy = get_center_pixel(annotation_path, inbd_center_mask_dir)
 
         df_filename_inbd = get_inbd_detection_path(annotation_path = annotation_path,
@@ -146,7 +148,7 @@ def main(annotations_file_path = "/data/maestria/resultados/mlbrief_PinusTaedaV1
                                     img_filename=labelme_json["imagePath"], cx=cx, cy=cy, output_dir=output_dir_image,
                                     threshold=0.6)
 
-        row = {"image": Path(annotation_path).stem , "P": P, "R": R, "F": F, "RMSE": RMSE, "TP": TP,
+        row = {"image": disk_name , "P": P, "R": R, "F": F, "RMSE": RMSE, "TP": TP,
                "FP": FP, "TN": TN, "FN": FN}
         #add row to dataset but not use append
         rows.append(row)
