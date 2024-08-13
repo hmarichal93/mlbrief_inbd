@@ -1,0 +1,106 @@
+{
+   "general": {
+      "demo_title": "A Brief Analysis of the Iterative Next Boundary Detection Network for Tree Rings Delineation in images of Pinus Taeda",
+      "requirements": "docker",
+      "description": "This demo runs the original code from the authors of INBD [1]:<p>[1] A. Gillert, G. Resente, A. Anadon-Rosell, M. Wilmking, and W Freiherr Von Lukas, 'Iterative next boundary detection for instance segmentation of tree rings in microscopy images of shrub cross sections', CVPR, June 2023, pp.14540-14548</p><p>The input ar an image and a polyline delimiting the pith boundary.</p><p>The output are the tree rings boundaries.</p>"
+   },
+   "build": {
+      "url": "git@github.com:hmarichal93/mlbrief_inbd.git",
+      "rev": "origin/demo",
+      "dockerfile": ".ipol/Dockerfile"
+   },
+   "inputs": [
+      {
+         "description": "input",
+         "max_pixels": "10000*10000",
+         "dtype": "3x8i",
+         "ext": ".png",
+         "type": "image",
+         "max_weight": "10000*10000",
+         "control": "lines"
+      }
+   ],
+   "params": [
+      {
+         "id": "model",
+         "type": "selection_radio",
+         "label": "Select Model",
+         "comments": "Select Model",
+         "values": {
+            "Pinus Taeda": "model.update.pt.zip",
+            "EH": "model_eh.update.pt.zip"
+         },
+         "default_value": "model.update.pt.zip"
+      },
+      {
+         "label": "<b>Advanced parameters</b>",
+         "type": "label",
+         "visible": "params.options=='1'"
+      },
+      {
+         "id": "options",
+         "label": "Show advanced parameters",
+         "type": "checkbox",
+         "default_value": false
+      },
+      {
+         "id": "hsize",
+         "label": "Height size",
+         "comments": "Image height size. Set to 0 to use full resolution",
+         "type": "range",
+         "values": {
+            "default": 1000,
+            "max": 3000,
+            "min": 0,
+            "step": 1
+         },
+         "visible": "params.options=='1'"
+      },
+      {
+         "id": "wsize",
+         "label": "Width size",
+         "comments": "Image width size. Set to 0 to use full resolution",
+         "type": "range",
+         "values": {
+            "default": 1000,
+            "max": 3000,
+            "min": 0,
+            "step": 1
+         },
+         "visible": "params.options=='1'"
+      }
+   ],
+   "results": [
+      {
+         "contents": {
+            "input": {
+               "img": "input_0.png"
+            },
+            "mask": {
+               "img": "mask.png"
+            },
+            "output_inbd": {
+               "img": "output/models_/input_0.jpg.labelmap.png"
+            },
+            "output_rings": {
+               "img": "output/inbd_urudendro_labels/input_0/contours.png"
+            }
+         },
+         "type": "gallery"
+      }
+   ],
+   "archive": {
+      "enable_reconstruct": true,
+      "archive_always": true,
+      "files": {
+         "input_0.png": "Input",
+         "mask.png": "Mask",
+         "output/models_/input_0.jpg.labelmap.png": "Output_Inbd",
+         "output/inbd_urudendro_labels/input_0/contours.png": "Output_Urudendro"
+      },
+      "info": {
+         "run_time": "run time"
+      }
+   },
+   "run": "$bin/.ipol/run.sh $input_0 inpainting_data_0.txt mask.png $bin . $wsize $hsize $model"
+}
