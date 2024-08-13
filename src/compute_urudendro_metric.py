@@ -163,13 +163,13 @@ if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument("--annotations_file_path", type=str,
-                        default="/data/maestria/resultados/mlbrief_PinusTaedaV1_1500/test_and_val_annotations.txt")
+                        default="/data/maestria/resultados/mlbrief_PinusTaedaV1_1500/train_annotations.txt")
     parser.add_argument("--root_original_dataset", type=str,
                         default="/data/maestria/resultados/mlbrief_inbd/PinusTaedaV1")
-    parser.add_argument("--output_dir", type=str, default="/data/maestria/resultados/mlbrief_PinusTaedaV1_1500/inference/inbd_results/inbd_/inbd_urudendro_labels_original_shape")
+    parser.add_argument("--output_dir", type=str, default="/data/maestria/resultados/mlbrief_PinusTaedaV1_1500/inference/train/inbd_results/inbd_/inbd_urudendro_labels_original_shape")
     parser.add_argument("--inbd_inference_results_dir", type=str,
-                        default="/data/maestria/resultados/mlbrief_PinusTaedaV1_1500/inference/inbd_results/inbd_/inbd_urudendro_labels")
-    parser.add_argument("--inbd_center_mask_dir", type=str, default="/data/maestria/resultados/mlbrief_PinusTaedaV1_1500/inference/center")
+                        default="/data/maestria/resultados/mlbrief_PinusTaedaV1_1500/inference/train/inbd_results/inbd_/inbd_urudendro_labels")
+    parser.add_argument("--inbd_center_mask_dir", type=str, default="/data/maestria/resultados/mlbrief_PinusTaedaV1_1500/inference/train/center")
 
     args = parser.parse_args()
     main(annotations_file_path=args.annotations_file_path, root_original_dataset=args.root_original_dataset,
