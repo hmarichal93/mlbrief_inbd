@@ -1,4 +1,4 @@
-# MLBrief: INBD - Instance Segmentation Model Trained on Pinus taeda Species
+# A Brief Analysis of the Iterative Next Boundary Detection Network for Tree Rings Delineation in images of Pinus Taeda
 The INBD model proposed in the paper "Iterative Next Boundary Detection for Instance Segmentation of Tree Rings in Microscopy Images of Shrub Cross Sections" was trained on the Pinus taeda species. 
 The model was trained using the UruDendro dataset, which contains annotations in the UruDendro format. The INBD model was evaluated using the UruDendro metric.
 
