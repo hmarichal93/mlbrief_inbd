@@ -2,7 +2,7 @@
 The INBD model proposed in the paper "Iterative Next Boundary Detection for Instance Segmentation of Tree Rings in Microscopy Images of Shrub Cross Sections" was trained on the Pinus taeda species. 
 The model was trained using the UruDendro dataset, which contains annotations in the UruDendro format. The INBD model was evaluated using the UruDendro metric.
 
-Demo for the model is available at [Demo](https://ipolcore.ipol.im/demo/clientApp/demo.html?id=77777000523&key=FF374F2900F98F32912B65BA925739A4). A brief article describing the model is available at [MLBrief](https://mlbrief.com/).
+Demo for the model is available at [Demo](https://ipolcore.ipol.im/demo/clientApp/demo.html?id=77777000523&key=FF374F2900F98F32912B65BA925739A4). A brief article describing the model is available at [MLBrief](https://arxiv.org/abs/2408.14343).
 
 | ![Image 1](assets/imagen.png)      | ![Image 2](assets/mask.png)             |
 |------------------------------------|-----------------------------------------|
