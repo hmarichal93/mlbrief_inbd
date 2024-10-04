@@ -53,6 +53,8 @@ class FromINBD2UruDendro:
         if not Path(center_mask_path).exists():
             raise "center mask not found"
         center_mask = cv2.imread(center_mask_path, cv2.IMREAD_UNCHANGED)
+        #convert to gray scale
+        center_mask = cv2.cvtColor(center_mask, cv2.COLOR_BGR2GRAY)
         cy, cx = np.argwhere(center_mask).mean(0).tolist()
 
 
