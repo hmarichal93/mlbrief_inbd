@@ -98,7 +98,7 @@ class labelmeDataset:
             img = cv2.imread(str(img_path))
 
 
-            segmentation_mask, boundaries_mask = self.annotation_to_mask(annotation, img, pith_size=1,
+            segmentation_mask, boundaries_mask = self.annotation_to_mask(annotation, img, pith_size=0,
                                                                          size=size)
             if size:
                 img = resize_image_using_pil_lib(img, size, size)
@@ -235,8 +235,7 @@ class labelmeDataset:
         self.test_images_path = self.output_dir / "test_images.txt"
 
         self.train_annotations_path = self.output_dir / "train_annotations.txt"
-        self.val_annotations_path = self.output_dir / "val_annotations.txt"
-        self.test_annotations_path = self.output_dir / "test_annotations.txt"
+
 
         if self.train_images_path.exists() and self.val_images_path.exists() and self.test_images_path.exists():
             return
@@ -260,23 +259,31 @@ class labelmeDataset:
         test_images_index = l_indexes[train_index + val_index:]
 
         self.save_as_txt(self.train_images_path, [l_images[i] for i in train_images_index])
-        self.save_as_txt(self.val_images_path, [l_images[i] for i in val_images_index])
-        self.save_as_txt(self.test_images_path, [l_images[i] for i in test_images_index])
-
         self.save_as_txt(self.train_annotations_path, [l_annotations[i] for i in train_images_index])
-        self.save_as_txt(self.val_annotations_path, [l_annotations[i] for i in val_images_index])
-        self.save_as_txt(self.test_annotations_path, [l_annotations[i] for i in test_images_index])
+        if not val_size == 0:
+            self.val_annotations_path = self.output_dir / "val_annotations.txt"
+            self.save_as_txt(self.val_images_path, [l_images[i] for i in val_images_index])
+            self.save_as_txt(self.val_annotations_path, [l_annotations[i] for i in val_images_index])
+
+        if not test_size == 0:
+            self.test_annotations_path = self.output_dir / "test_annotations.txt"
+            self.save_as_txt(self.test_images_path, [l_images[i] for i in test_images_index])
+            self.save_as_txt(self.test_annotations_path, [l_annotations[i] for i in test_images_index])
 
         return
 
     def create_dataloaders(self):
+        train, val, test = None, None, None
         train = TreeRingDataloader(annotation_csv_file=self.train_annotations_path,
                                    images_csv_file=self.train_images_path,
                                    root_dir=self.output_dir)
-        val = TreeRingDataloader(annotation_csv_file=self.val_annotations_path, images_csv_file=self.val_images_path,
-                                 root_dir=self.output_dir)
-        test = TreeRingDataloader(annotation_csv_file=self.test_annotations_path, images_csv_file=self.test_images_path,
-                                  root_dir=self.output_dir)
+        if self.val_annotations_path is not None:
+            val = TreeRingDataloader(annotation_csv_file=self.val_annotations_path, images_csv_file=self.val_images_path,
+                                     root_dir=self.output_dir)
+
+        if self.test_annotations_path  is not None:
+            test = TreeRingDataloader(annotation_csv_file=self.test_annotations_path, images_csv_file=self.test_images_path,
+                                      root_dir=self.output_dir)
 
         return train, val, test
 
@@ -342,14 +349,19 @@ class labelmeDataset:
 def build_dataset(dataset_dir, output_dir='/data/maestria/resultados/inbd_2', size=None):
     dataset = labelmeDataset(dataset_dir=dataset_dir, output_dir=output_dir)
     dataset.transform_annotations(size=size)
-    dataset.split_dataset_in_train_val_and_test()
+    dataset.split_dataset_in_train_val_and_test(val_size=0, test_size=0)
     train_dataloader, val_dataloader, test_dataloader = dataset.create_dataloaders()
-    train_pdf_path = Path(output_dir) / 'train.pdf'
-    dataset.visualization(train_dataloader, pdf_output=train_pdf_path)
-    val_pdf_path = Path(output_dir) / 'val.pdf'
-    dataset.visualization(val_dataloader, pdf_output=val_pdf_path)
-    test_pdf_path = Path(output_dir) / 'test.pdf'
-    dataset.visualization(test_dataloader, pdf_output=test_pdf_path)
+    if train_dataloader is not None:
+        train_pdf_path = Path(output_dir) / 'train.pdf'
+        dataset.visualization(train_dataloader, pdf_output=train_pdf_path)
+
+    if val_dataloader is not None:
+        val_pdf_path = Path(output_dir) / 'val.pdf'
+        dataset.visualization(val_dataloader, pdf_output=val_pdf_path)
+
+    if test_dataloader is not None:
+        test_pdf_path = Path(output_dir) / 'test.pdf'
+        dataset.visualization(test_dataloader, pdf_output=test_pdf_path)
 
     return
 

@@ -17,15 +17,16 @@ def generate_annotation_mask(annotation_path:str, output_dir:str):
     return
 
 
-def main(input_images_path, input_annotations_path, root_dataset, output_dir, inbd_model_path):
+def main(input_images_path, input_annotations_path, root_dataset, output_dir, inbd_model_path, center_mask_dir = None):
     #1.0 Generate center mask images
-    df_annotations = pd.read_csv(input_annotations_path, header=None)
-    center_mask_dir = Path(output_dir) / "center"
-    center_mask_dir.mkdir(parents=True, exist_ok=True)
-    for idx, row in df_annotations.iterrows():
-        annotation_path = row.iloc[0]
-        annotation_path = Path(root_dataset) / annotation_path
-        generate_annotation_mask( str(annotation_path), str(center_mask_dir))
+    if center_mask_dir is None:
+        df_annotations = pd.read_csv(input_annotations_path, header=None)
+        center_mask_dir = Path(output_dir) / "center"
+        center_mask_dir.mkdir(parents=True, exist_ok=True)
+        for idx, row in df_annotations.iterrows():
+            annotation_path = row.iloc[0]
+            annotation_path = Path(root_dataset) / annotation_path
+            generate_annotation_mask( str(annotation_path), str(center_mask_dir))
 
     # 2.0 run INBD inference
     # 2.1 get script file path
@@ -54,6 +55,7 @@ if __name__ == "__main__":
     parser.add_argument('--root_dataset', type=str, help='Root dataset')
     parser.add_argument('--output_dir', type=str, help='Output directory')
     parser.add_argument('--inbd_model_path', type=str, help='INBD model path')
+    parser.add_argument('--center_mask_dir', type=str, help='Center mask directory', default=None)
 
     args = parser.parse_args()
-    main(args.input_images_path, args.input_annotations_path, args.root_dataset, args.output_dir, args.inbd_model_path)
+    main(args.input_images_path, args.input_annotations_path, args.root_dataset, args.output_dir, args.inbd_model_path, args.center_mask_dir)

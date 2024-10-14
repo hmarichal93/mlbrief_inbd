@@ -1,0 +1,11 @@
+./cluster.sh  segmentation /clusteruy/home/henry.marichal/repos/mlbrief_inbd/mlbrief_inbd/INBD ~/datasets/PinusTaedaV1_1500_2/ ~/resultados/mlbrief_experiments_segmentation /clusteruy/home/henry.marichal/resultados/inbd_gleditsia_1500_trans/model/2024-07-25_18h30m37s_segmentation_100e_x1.0_/model.pt.zip
+
+./cluster.sh  segmentation /clusteruy/home/henry.marichal/repos/mlbrief_inbd/mlbrief_inbd/INBD /clusteruy/home/henry.marichal/datasets/INBD/EH_1500 ~/resultados/mlbrief_experiments_segmentation_eh /clusteruy/home/henry.marichal/resultados/inbd_gleditsia_1500_trans/model/2024-07-25_18h30m37s_segmentation_100e_x1.0_/model.pt.zip
+
+###########################################################################################################################
+#candice experiments 10 samples
+###########################################################################################################################
+./cluster.sh segmentation /clusteruy/home/henry.marichal/repos/mlbrief_inbd/mlbrief_inbd/INBD /clusteruy/home/henry.marichal/datasets/Candice_1500 ~/resultados/mlbrief_experiments_segmentation_candice /clusteruy/home/henry.marichal/repos/maestria-tesis/algoritmos/detectarAnillos/deteccionDeBordes/resultados/inbd_pinus_taeda_eh_1500/model/2024-07-22_15h16m04s_segmentation_100e_x1.0_/model.pt.zip
+
+
+./cluster.sh INBD /clusteruy/home/henry.marichal/repos/mlbrief_inbd/mlbrief_inbd/INBD /clusteruy/home/henry.marichal/datasets/Candice_1500 ~/resultados/mlbrief_experiments_segmentation_candice /clusteruy/home/henry.marichal/repos/maestria-tesis/algoritmos/detectarAnillos/deteccionDeBordes/resultados/mlbrief_experiments_segmentation_candice/model/2024-09-13_15h06m26s_segmentation_100e_x1.0_/model.pt.zip /clusteruy/home/henry.marichal/repos/maestria-tesis/algoritmos/detectarAnillos/deteccionDeBordes/resultados/inbd_pinus_taeda_eh_1500/model/2024-07-22_16h29m08s_INBD_100e_a6.3_/model.update.pt.zip
