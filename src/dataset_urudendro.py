@@ -98,7 +98,7 @@ class labelmeDataset:
             img = cv2.imread(str(img_path))
 
 
-            segmentation_mask, boundaries_mask = self.annotation_to_mask(annotation, img, pith_size=0,
+            segmentation_mask, boundaries_mask = self.annotation_to_mask(annotation, img, pith_size=1,
                                                                          size=size)
             if size:
                 img = resize_image_using_pil_lib(img, size, size)
@@ -215,11 +215,10 @@ class labelmeDataset:
 
         l_rings.sort(key=lambda x: x.area, reverse=True)
         for i, ring in enumerate(l_rings):
-            if i < len(l_rings) - pith_size:
-                cv2.fillPoly(segmentation_mask, [np.array(ring.exterior.coords, dtype=np.int32)],
-                             color.get_next_color())
-                cv2.polylines(segmentation_mask, [np.array(ring.exterior.coords, dtype=np.int32)],
-                              isClosed=True, color=0, thickness=boundaries_thickness)
+            cv2.fillPoly(segmentation_mask, [np.array(ring.exterior.coords, dtype=np.int32)],
+                         color.get_next_color())
+            cv2.polylines(segmentation_mask, [np.array(ring.exterior.coords, dtype=np.int32)],
+                          isClosed=True, color=0, thickness=boundaries_thickness)
 
         return segmentation_mask, boundaries_mask
 
