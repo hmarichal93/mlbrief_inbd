@@ -143,6 +143,8 @@ def resize_image_using_pil_lib(im_in: np.array, height_output: object, width_out
     # Image.ANTIALIAS is deprecated, PIL recommends using Reampling.LANCZOS
     flag = Image.ANTIALIAS
     # flag = Image.Resampling.LANCZOS
+
+    #flag = Image.Resampling.LANCZOS
     if keep_ratio:
         aspect_ratio = pil_img.height / pil_img.width
         if pil_img.width > pil_img.height:
