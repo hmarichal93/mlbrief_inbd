@@ -9,8 +9,8 @@ import json
 from pathlib import Path
 from shapely.geometry import Polygon, Point
 
-from uruDendro.metric_influence_area import  main as urudendro_metric
-from uruDendro.lib import drawing as dr
+from urudendro.metric_influence_area import  main as urudendro_metric
+from urudendro import drawing as dr
 def load_json(filepath: str) -> dict:
     """
     Load json utility.
