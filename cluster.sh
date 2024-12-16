@@ -15,9 +15,9 @@
 #SBATCH --qos=gpu
 
 
-#source /etc/profile.d/modules.sh
-#source /clusteruy/home/henry.marichal/miniconda3/etc/profile.d/conda.sh
-#conda activate inbd_gpu
+source /etc/profile.d/modules.sh
+source /clusteruy/home/henry.marichal/miniconda3/etc/profile.d/conda.sh
+conda activate inbd_gpu
 
 # -------------------------------------------------------
 #disco local SSD local al nodo. /clusteruy/home/henry.marichal se accede via NFS (puede ser realmente lento)
