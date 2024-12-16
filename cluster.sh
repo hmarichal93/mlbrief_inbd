@@ -26,6 +26,8 @@ ROOT_DIR=$2
 HOME_DATASET_DIR=$3
 HOME_RESULTADOS_DIR=$4
 SEGMENTATION_MODEL=$5
+IMAGES_FILE=$6
+ANNOTATIONS_FILE=$7
 LOCAL_NODE_DIR=/scratch/henry.marichal/
 HOME_RESULTADOS_MODEL_DIR=$HOME_RESULTADOS_DIR/model
 
@@ -70,12 +72,12 @@ cd $ROOT_DIR
 
 if [ "$1" == "segmentation" ]; then
     echo "Segmentation"
-    python main.py train segmentation $HOME_DATASET_DIR/train_inputimages.txt $HOME_DATASET_DIR/train_annotations.txt \
+    python main.py train segmentation $HOME_DATASET_DIR/$IMAGES_FILE $HOME_DATASET_DIR/$ANNOTATIONS_FILE \
     --output $HOME_RESULTADOS_MODEL_DIR --epochs 100 --downsample 1 --transfer_learning --model_path $SEGMENTATION_MODEL > "$stdout_file" 2> "$stderr_file"
 fi
 if [ "$1" == "INBD" ]; then
     echo "INBD"
-    INBD_MODEL=$6
+    INBD_MODEL=$8
     python main.py train INBD $HOME_DATASET_DIR/train_inputimages.txt $HOME_DATASET_DIR/train_annotations.txt \
            --segmentationmodel=$SEGMENTATION_MODEL --downsample 1 --output $HOME_RESULTADOS_MODEL_DIR --epochs 100\
            --transfer_learning --model_path $INBD_MODEL > "$stdout_file" 2> "$stderr_file"
