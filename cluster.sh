@@ -78,7 +78,7 @@ fi
 if [ "$1" == "INBD" ]; then
     echo "INBD"
     INBD_MODEL=$8
-    python main.py train INBD $HOME_DATASET_DIR/$6 $HOME_DATASET_DIR/$7 \
+    python main.py train INBD $HOME_DATASET_DIR/$IMAGES_FILE $HOME_DATASET_DIR/$ANNOTATIONS_FILE \
            --segmentationmodel=$SEGMENTATION_MODEL --downsample 1 --output $HOME_RESULTADOS_MODEL_DIR --epochs 100\
            --transfer_learning --model_path $INBD_MODEL > "$stdout_file" 2> "$stderr_file"
 fi
