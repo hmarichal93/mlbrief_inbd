@@ -4,15 +4,18 @@ import shutil
 import pandas as pd
 import os
 from skimage import io
+import scipy.ndimage
+import random
 
 from shapely.geometry import Polygon
 from pathlib import Path
 from torch.utils.data import Dataset
+from PIL import Image, ImageDraw
 
 from lib.image import resize_image_using_pil_lib, Color
 from lib.io import load_json
 from dataset_inbd import InspectAnnotations
-
+from urudendro.image import load_image, write_image
 
 class TreeRingDataloader(Dataset):
     """
@@ -49,7 +52,7 @@ class labelmeDataset:
         self.dataset_dir = dataset_dir
         Path(self.dataset_dir).mkdir(parents=True, exist_ok=True)
         self.images_dir = dataset_dir + "/images"
-        self.annotations_dir = dataset_dir + "/anotaciones/labelme/images"
+        self.annotations_dir = dataset_dir + "/annotations/labelme/images"
         self.output_dir = Path(output_dir)
         self.output_annotations_dir = self.output_dir / "annotations"
         self.output_annotations_dir.mkdir(parents=True, exist_ok=True)
@@ -94,9 +97,11 @@ class labelmeDataset:
         for annotation in annotations:
             annotation = str(annotation)
             img_name = Path(annotation).name.split('.')[0]
-            img_path = Path(self.images_dir).rglob(f"segmented/{img_name}.*").__next__()  # get the image path
-            img = cv2.imread(str(img_path))
-
+            try:
+                img_path = Path(self.images_dir).rglob(f"segmented/{img_name}.*").__next__()  # get the image path
+                img = cv2.imread(str(img_path))
+            except StopIteration:
+                continue
 
             segmentation_mask, boundaries_mask = self.annotation_to_mask(annotation, img, pith_size=1,
                                                                          size=size)
@@ -341,14 +346,90 @@ class labelmeDataset:
 
         images[0].save(pdf_output, save_all=True, append_images=images[1:], quality=100)
 
-    from pathlib import Path
+    def augment(self, train_images_path, train_annotations_path, occlusion=True, proportion_dataset = 0.2):
+        """
+        Augment images
+        :param train_images_path: train images path
+        :param train_annotations_path: train annotations path
+        :return:
+        """
+        l_images = self.read_txt(train_images_path)
+        l_images_augmented = []
+        l_annotations_augmented = []
+
+        for img_path in l_images:
+            #get true 20% of the time
+            if random.random() > proportion_dataset:
+                continue
+            image_name = Path(img_path).stem
+            #get annotation path
+            annotation_path = Path(self.output_annotations_dir) / (image_name + ".tiff")
+            annotation_exists = annotation_path.exists()
+            if not annotation_exists:
+                continue
+
+            img = load_image(str(Path(self.output_images_dir) / Path(img_path).name))
+
+            if occlusion:
+
+                total_occlusion = random.randint(1, 3)
+                sample_name = image_name + f"_occlusion_{total_occlusion}"
+                img_o = self.occlusion(img.copy(), total_occlusion=total_occlusion)
+                image_new_name = f"{sample_name}.jpg"
+                image_new_path = str(self.output_images_dir / image_new_name)
+                write_image(image_new_path, img_o)
+                l_images_augmented.append(str(Path(self.output_images_dir.name) / image_new_name))
+                #annotation new name
+                annotation_new_name = f"{sample_name}.tiff"
+                annotation_new_path = str(self.output_annotations_dir / annotation_new_name)
+                os.system(f"cp {annotation_path} {annotation_new_path}")
+                boundaries_mask_pil = Image.open(annotation_new_path)
+                boundaries_mask_pil.save(str(annotation_new_path))
+
+                l_annotations_augmented.append( str(Path(self.output_annotations_dir.name) / annotation_new_name))
+
+                annotation_path = Path(self.output_annotations_dir) / (image_name + ".png")
+                annotation_new_name = f"{sample_name}.png"
+                annotation_new_path = str(self.output_annotations_dir / annotation_new_name)
+                shutil.copy(annotation_path, annotation_new_path)
+
+        self.save_as_txt(train_images_path, l_images + l_images_augmented)
+        self.save_as_txt(train_annotations_path, l_images + l_annotations_augmented)
 
 
 
-def build_dataset(dataset_dir, output_dir='/data/maestria/resultados/inbd_2', size=None):
+
+        return
+
+    def occlusion(self, img, total_occlusion=1):
+        image = Image.fromarray(img)
+        draw = ImageDraw.Draw(image)
+        width, height = image.size
+
+        # Add 1-3 random rectangles
+
+        for _ in range(total_occlusion):
+            width_rectangle = random.randint(0, width // 3)
+            height_rectangle = random.randint(0, height // 3)
+            x1 = random.randint(width // 5 , 4 * ( width -1) // 5)
+            y1 = random.randint(height // 5 , 4 * (height -1) // 5)
+            x2 = np.minimum(x1 + width_rectangle, width-1)
+            y2 = np.minimum(y1 + height_rectangle, height-1)
+            # For masks, use black; for images, use random colors
+            color = tuple(random.randint(0, 255) for _ in range(3))
+            draw.rectangle([x1, y1, x2, y2], fill=color)
+
+        return np.array(image)
+
+
+
+
+def build_dataset(dataset_dir, output_dir='/data/maestria/resultados/inbd_2', size=None, augment=False):
     dataset = labelmeDataset(dataset_dir=dataset_dir, output_dir=output_dir)
     dataset.transform_annotations(size=size)
-    dataset.split_dataset_in_train_val_and_test(val_size=0, test_size=0)
+    dataset.split_dataset_in_train_val_and_test(val_size=0.20, test_size=0.20)
+    if augment:
+        dataset.augment(dataset.train_images_path, dataset.train_annotations_path)
     train_dataloader, val_dataloader, test_dataloader = dataset.create_dataloaders()
     if train_dataloader is not None:
         train_pdf_path = Path(output_dir) / 'train.pdf'
@@ -376,8 +457,9 @@ if __name__ == "__main__":
     parser.add_argument('--output_folder', type=str, help='Output folder')
 
     parser.add_argument('--size', type=int, help='Output image size')
+    parser.add_argument('--augment', type=bool, help='augment train dataset', default=False)
     ##resize flag
     args = parser.parse_args()
-    build_dataset(args.dataset_dir, args.output_folder, args.size)
+    build_dataset(args.dataset_dir, args.output_folder, args.size, args.augment)
     inspect_annotations(dataset_dir=args.output_folder,
                         output_dir=Path(args.output_folder) / 'inspect')
