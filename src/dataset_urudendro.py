@@ -193,7 +193,7 @@ class labelmeDataset:
         boundaries_mask = np.zeros(img.shape[:2], dtype=np.int8) + -1
 
         color = Color()
-        boundaries_thickness = 3
+        boundaries_thickness = 1
 
         # 2.0 fill mask
         for i, ring in enumerate(l_rings):
