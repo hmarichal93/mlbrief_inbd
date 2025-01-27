@@ -63,12 +63,12 @@ class INBD_Task(TrainingTask):
                 start_high = w_ytrue[...,0]
             try:
                 y_pred    = self.basemodule.to(device).forward_from_polar_grid(pgrid, start_high=start_high)
+
+                y_pred, w_ypred    = y_pred['x'], y_pred.get('wd_x')
+                y_true    = torch.as_tensor(create_2d_target(pgrid, l+1))[None].to(device).long()
             except Exception as e:
-                print(f"boundary shape {boundary.boundarypoints.shape}")
+                print(f"boundary shape {e}")
                 pass
-            y_pred, w_ypred    = y_pred['x'], y_pred.get('wd_x')
-            y_true    = torch.as_tensor(create_2d_target(pgrid, l+1))[None].to(device).long()
-            
             #new boundary
             boundary    = self.basemodule.output_to_boundary(y_pred[0].cpu(), boundary, pgrid)
             
