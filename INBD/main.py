@@ -80,7 +80,7 @@ def train(args):
     #otherwise might lead to inconsistencies if code changes during training
     model_destination     = os.path.join(destination, 'model')
     model_destination_tmp = model.save(model_destination+'.tmp.pt.zip')
-    model                 = util.load_model(model_destination_tmp)
+    #model                 = util.load_model(model_destination_tmp)
     err = model.start_training(
         imagefiles,     annotations,
         val_imagefiles, val_annotations,
@@ -292,7 +292,7 @@ if __name__ == '__main__':
     parser_inf   = subparsers.add_parser('inference', help='Process images with a network')
     parser_inf.add_argument('model',       type=str, help='Path to pretrained model')
     parser_inf.add_argument('images',      type=str, help='Path to a text file containing paths to images')
-    parser_inf.add_argument('center_mask_path', type=str, help='Path to a text file containing paths to anotation')
+    parser_inf.add_argument('--center_mask_path', type=str, help='Path to a text file containing paths to anotation', default=None)
     parser_inf.add_argument('--output',    type=str, default='inference/', help='Output directory')
     parser_inf.add_argument('--suffix',    type=str, default='',           help='Suffix/description to add to output name')
     parser_inf.add_argument('--seg',       type=bool,default=False,        help='Save only segmentation output')
