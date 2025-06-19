@@ -42,7 +42,7 @@ check_command_result mkdir -p $NODE_DATASET_DIR $NODE_RESULTADOS_DIR
 
 # Copiar dataset al disco local del nodo
 check_command_result cp -r $HOME_DATASET_DIR $NODE_DATASET_DIR
-
+check_command_result ls $NODE_DATASET_DIR
 # Entrenar el modelo
 cd $ROOT_DIR
 
