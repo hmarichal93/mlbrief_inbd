@@ -26,6 +26,8 @@ DATASET_NAME=$4
 NODE_DATASET_DIR=/scratch/henry.marichal/
 NODE_RESULTADOS_DIR=$NODE_DATASET_DIR/results
 EPOCHS=$5
+IMAGES_FILE=train_inputimages.txt
+ANNOTATIONS_FILE=train_annotations.txt
 
 # Función para verificar el resultado de un comando
 check_command_result() {
