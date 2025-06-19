@@ -81,6 +81,7 @@ def train(args):
     model_destination     = os.path.join(destination, 'model')
     model_destination_tmp = model.save(model_destination+'.tmp.pt.zip')
     #model                 = util.load_model(model_destination_tmp)
+    kw['batch_size'] = 32
     err = model.start_training(
         imagefiles,     annotations,
         val_imagefiles, val_annotations,
@@ -126,7 +127,7 @@ def inference(args):
     model      = util.load_model(args.model).eval().requires_grad_(False)
     model = instantiate_model_for_debug(model)
     #if torch.cuda.is_available():
-    #    model.cuda()
+    #   model.cuda()
 
     modelbasename = args.model.split('/')[-2]
     outputdir     = os.path.join(args.output, f'{modelbasename}_{args.suffix}' )
