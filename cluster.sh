@@ -2,7 +2,7 @@
 #SBATCH --job-name=inbd
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=8
-#SBATCH --mem=30G
+#SBATCH --mem=100G
 #SBATCH --time=48:00:00
 #SBATCH --mail-type=ALL
 #SBATCH --tmp=100G
