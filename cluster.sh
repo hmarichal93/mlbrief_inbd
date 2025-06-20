@@ -16,7 +16,7 @@
 # Cargar módulos y activar el entorno
 source /etc/profile.d/modules.sh
 source /clusteruy/home/henry.marichal/miniconda3/etc/profile.d/conda.sh
-conda activate deep_cstrd
+conda activate inbd_gpu
 
 # Variables
 ROOT_DIR=$1
@@ -63,7 +63,7 @@ for i in {1..5}; do
   python main.py train INBD $NODE_DATASET_DIR/$DATASET_NAME/$IMAGES_FILE $NODE_DATASET_DIR/$DATASET_NAME/$ANNOTATIONS_FILE \
          --segmentationmodel=$SEGMENTATION_MODEL --downsample 1 --output $MODEL_DIR --epochs $EPOCHS
 
-  HOME_ITERATION_DIR="$HOME_RESULTADOS_DIR/model_$i"
+  HOME_ITERATION_DIR="$HOME_RESULTADOS_DIR"
   check_command_result mkdir -p $HOME_ITERATION_DIR
   check_command_result cp -r $MODEL_DIR $HOME_ITERATION_DIR
 
