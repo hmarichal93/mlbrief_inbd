@@ -39,8 +39,11 @@ check_command_result() {
 }
 
 # Preparar directorios
-check_command_result rm -rf $NODE_DATASET_DIR $NODE_RESULTADOS_DIR
-check_command_result mkdir -p $NODE_DATASET_DIR $NODE_RESULTADOS_DIR
+check_command_result rm -rf $NODE_DATASET_DIR
+check_command_result rm -rf $NODE_RESULTADOS_DIR
+
+check_command_result mkdir -p $NODE_DATASET_DIR
+check_command_result mkdir -p $NODE_RESULTADOS_DIR
 
 # Copiar dataset al disco local del nodo
 check_command_result cp -r $HOME_DATASET_DIR $NODE_DATASET_DIR
@@ -55,6 +58,7 @@ for i in {1..5}; do
       --output $MODEL_DIR --epochs $EPOCHS --downsample 1
 
   SEGMENTATION_MODEL=$(find ${MODEL_DIR} -name model.pt.zip)
+  echo "Using segmentation model: $SEGMENTATION_MODEL"
 
   python main.py train INBD $NODE_DATASET_DIR/$DATASET_NAME/$IMAGES_FILE $NODE_DATASET_DIR/$DATASET_NAME/$ANNOTATIONS_FILE \
          --segmentationmodel=$SEGMENTATION_MODEL --downsample 1 --output $MODEL_DIR --epochs $EPOCHS
