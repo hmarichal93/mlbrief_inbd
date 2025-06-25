@@ -3,7 +3,7 @@
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=100G
-#SBATCH --time=48:00:00
+#SBATCH --time=72:00:00
 #SBATCH --mail-type=ALL
 #SBATCH --tmp=100G
 #SBATCH --mail-user=henry.marichal@fing.edu.uy
