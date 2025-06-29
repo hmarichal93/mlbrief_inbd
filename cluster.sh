@@ -32,6 +32,7 @@ ANNOTATIONS_FILE=train_annotations.txt
 
 # Función para verificar el resultado de un comando
 check_command_result() {
+    echo "Executing: $@"
     "$@"
     if [ $? -ne 0 ]; then
         echo "Error: El comando falló."
@@ -55,13 +56,13 @@ cd $ROOT_DIR
 for i in {1..5}; do
   MODEL_DIR="$NODE_RESULTADOS_DIR/model_$i"
   check_command_result mkdir -p $MODEL_DIR
-  python main.py train segmentation $NODE_DATASET_DIR/$DATASET_NAME/$IMAGES_FILE $NODE_DATASET_DIR/$DATASET_NAME/$ANNOTATIONS_FILE \
+  check_command_result python main.py train segmentation $NODE_DATASET_DIR/$DATASET_NAME/$IMAGES_FILE $NODE_DATASET_DIR/$DATASET_NAME/$ANNOTATIONS_FILE \
       --output $MODEL_DIR --epochs $EPOCHS --downsample $DOWNSAMPLING
 
   SEGMENTATION_MODEL=$(find ${MODEL_DIR} -name model.pt.zip)
   echo "Using segmentation model: $SEGMENTATION_MODEL"
 
-  python main.py train INBD $NODE_DATASET_DIR/$DATASET_NAME/$IMAGES_FILE $NODE_DATASET_DIR/$DATASET_NAME/$ANNOTATIONS_FILE \
+  check_command_result python main.py train INBD $NODE_DATASET_DIR/$DATASET_NAME/$IMAGES_FILE $NODE_DATASET_DIR/$DATASET_NAME/$ANNOTATIONS_FILE \
          --segmentationmodel=$SEGMENTATION_MODEL --downsample $DOWNSAMPLING --output $MODEL_DIR --epochs $EPOCHS
 
   HOME_ITERATION_DIR="$HOME_RESULTADOS_DIR"
