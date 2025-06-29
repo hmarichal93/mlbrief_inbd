@@ -26,6 +26,7 @@ DATASET_NAME=$4
 NODE_DATASET_DIR=/scratch/henry.marichal/
 NODE_RESULTADOS_DIR=$NODE_DATASET_DIR/results
 EPOCHS=$5
+DOWNSAMPLING=$6
 IMAGES_FILE=train_inputimages.txt
 ANNOTATIONS_FILE=train_annotations.txt
 
@@ -55,13 +56,13 @@ for i in {1..5}; do
   MODEL_DIR="$NODE_RESULTADOS_DIR/model_$i"
   check_command_result mkdir -p $MODEL_DIR
   python main.py train segmentation $NODE_DATASET_DIR/$DATASET_NAME/$IMAGES_FILE $NODE_DATASET_DIR/$DATASET_NAME/$ANNOTATIONS_FILE \
-      --output $MODEL_DIR --epochs $EPOCHS --downsample 1
+      --output $MODEL_DIR --epochs $EPOCHS --downsample $DOWNSAMPLING
 
   SEGMENTATION_MODEL=$(find ${MODEL_DIR} -name model.pt.zip)
   echo "Using segmentation model: $SEGMENTATION_MODEL"
 
   python main.py train INBD $NODE_DATASET_DIR/$DATASET_NAME/$IMAGES_FILE $NODE_DATASET_DIR/$DATASET_NAME/$ANNOTATIONS_FILE \
-         --segmentationmodel=$SEGMENTATION_MODEL --downsample 1 --output $MODEL_DIR --epochs $EPOCHS
+         --segmentationmodel=$SEGMENTATION_MODEL --downsample $DOWNSAMPLING --output $MODEL_DIR --epochs $EPOCHS
 
   HOME_ITERATION_DIR="$HOME_RESULTADOS_DIR"
   check_command_result mkdir -p $HOME_ITERATION_DIR
